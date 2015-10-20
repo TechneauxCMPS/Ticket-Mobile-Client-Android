@@ -28,6 +28,17 @@ public class MainActivity extends ActionBarActivity {
         password = (EditText) findViewById(R.id.password);
         CSNumber = (TextView) findViewById(R.id.CSNumberText);
 
+        CSNumber.setOnClickListener(new Button.OnClickListener() {
+
+            public void onClick(View v) {
+
+                String phone_no= "5045540101";
+                Intent callIntent = new Intent(Intent.ACTION_CALL);
+                callIntent.setData(Uri.parse("tel:"+phone_no));
+                startActivity(callIntent);
+
+            }
+        });
 
 
 
