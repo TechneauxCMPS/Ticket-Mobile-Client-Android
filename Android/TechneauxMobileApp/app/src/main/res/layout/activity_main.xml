@@ -13,7 +13,7 @@
         android:id="@+id/username"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="57dp"
-        android:text="Company Name"
+        android:hint="Company Name"
         android:textColor="@android:color/black" />
 
     <EditText
@@ -22,7 +22,7 @@
         android:inputType="textMultiLine"
         android:ems="10"
         android:id="@+id/password"
-        android:text="Password"
+        android:hint="Password"
         android:layout_below="@+id/username"
         android:layout_alignLeft="@+id/username"
         android:layout_alignStart="@+id/username"
