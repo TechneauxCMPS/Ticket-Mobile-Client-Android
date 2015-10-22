@@ -1,6 +1,7 @@
 package com.techneaux.techneauxmobileapp;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
@@ -18,6 +19,7 @@ public class MainActivity extends ActionBarActivity {
     private static EditText username;
     private static EditText password;
     private static TextView CSNumber;
+    public static final String MY_PREFS_NAME = "MyPrefsFile";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,7 +29,17 @@ public class MainActivity extends ActionBarActivity {
         username = (EditText) findViewById(R.id.username);
         password = (EditText) findViewById(R.id.password);
         CSNumber = (TextView) findViewById(R.id.CSNumberText);
+        setButtons();
 
+        SharedPreferences prefs = getSharedPreferences(MY_PREFS_NAME, MODE_PRIVATE);
+        username.setText(prefs.getString("companyname",null));
+        password.setText(prefs.getString("password", null));
+
+
+
+    }
+    private void setButtons()
+    {
         CSNumber.setOnClickListener(new Button.OnClickListener() {
 
             public void onClick(View v) {
@@ -45,8 +57,8 @@ public class MainActivity extends ActionBarActivity {
         submitLoginInfo.setOnClickListener(new Button.OnClickListener() {
 
             public void onClick(View v) {
-               String sUsername = username.getText().toString();
-               String sPassword = password.getText().toString();
+                String sUsername = username.getText().toString();
+                String sPassword = password.getText().toString();
                 if(sUsername.matches(""))
                 {
                     Toast.makeText(getApplicationContext(), "Username not entered!",
@@ -63,15 +75,19 @@ public class MainActivity extends ActionBarActivity {
                 {
                     Toast.makeText(getApplicationContext(), "Username: " + sUsername + " Password: " + sPassword,
                             Toast.LENGTH_LONG).show();
+
+                    SharedPreferences.Editor editor = getSharedPreferences(MY_PREFS_NAME, MODE_PRIVATE).edit();
+                    editor.putString("companyname", sUsername);
+                    editor.putString("password", sPassword);
+                    editor.commit();
+
                     return;
                 }
 
 
             }
         });
-
     }
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.

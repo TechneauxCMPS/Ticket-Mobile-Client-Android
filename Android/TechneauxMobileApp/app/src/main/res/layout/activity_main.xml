@@ -23,6 +23,7 @@
         android:ems="10"
         android:id="@+id/password"
         android:hint="Password"
+        android:password="true"
         android:layout_below="@+id/username"
         android:layout_alignLeft="@+id/username"
         android:layout_alignStart="@+id/username"
