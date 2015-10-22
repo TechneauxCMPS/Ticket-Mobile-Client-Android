@@ -103,7 +103,17 @@ public class MainActivity extends ActionBarActivity {
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
+        if (id == R.id.wipe_data) {
+            SharedPreferences.Editor editor = getSharedPreferences(MY_PREFS_NAME, MODE_PRIVATE).edit();
+            editor.putString("companyname", "");
+            editor.putString("password", "");
+            editor.commit();
+            
+            SharedPreferences prefs = getSharedPreferences(MY_PREFS_NAME, MODE_PRIVATE);
+            username.setText(prefs.getString("companyname", null));
+            password.setText(prefs.getString("password", null));
+            Toast.makeText(getApplicationContext(), "Data Erased",
+                    Toast.LENGTH_LONG).show();
             return true;
         }
 
