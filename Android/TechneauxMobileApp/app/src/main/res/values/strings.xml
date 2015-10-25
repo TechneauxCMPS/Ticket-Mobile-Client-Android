@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">Techneaux Mobile App</string>
+
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">Settings</string>
+    <string name="wipe_data">Erase Saved Data</string>
+</resources>
