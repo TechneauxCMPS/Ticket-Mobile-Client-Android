@@ -37,6 +37,13 @@ public class MainActivity extends AppCompatActivity {
 
         SharedPreferences prefs = getSharedPreferences(MY_PREFS_NAME, MODE_PRIVATE);
         username.setText(prefs.getString("companyname",null)); // init username to what was stored
+        final View v = findViewById(android.R.id.content);
+
+        if( !(prefs.getInt("screen_state",0) < 2  ))
+        {
+            Intent myIntent = new Intent(v.getContext(), RegistrationActivity.class);
+            startActivityForResult(myIntent, 0);
+        }
 
 
 
@@ -87,6 +94,8 @@ public class MainActivity extends AppCompatActivity {
                 {
                     SharedPreferences.Editor editor = getSharedPreferences(MY_PREFS_NAME, MODE_PRIVATE).edit();
                     editor.putString("companyname", sUsername);
+                    editor.putInt("screen_state", 2);
+
                     editor.commit();
 
                     Intent myIntent = new Intent(v.getContext(), RegistrationActivity.class);
@@ -116,6 +125,7 @@ public class MainActivity extends AppCompatActivity {
 
 
         editor.putString("companyname", null); //Wipe out company name
+        editor.putInt("screen_state", 0); //Wipe out company name
         editor.commit();
 
         username.setText(null); //sets field to empty

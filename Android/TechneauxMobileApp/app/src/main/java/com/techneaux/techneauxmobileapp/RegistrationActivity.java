@@ -1,5 +1,6 @@
 package com.techneaux.techneauxmobileapp;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -159,7 +160,7 @@ public class RegistrationActivity extends AppCompatActivity {
      * Parameters: None
      * Use: whenever wipe data button is used in app.
      */
-    public static void wipeData(SharedPreferences.Editor editor)
+    public void wipeData(SharedPreferences.Editor editor)
     {
         editor.putString("emp_firstname", null);
         editor.putString("emp_lastname", null);
@@ -174,6 +175,9 @@ public class RegistrationActivity extends AppCompatActivity {
         phonenumber.setText(null); //sets field to empty
         emailaddress.setText(null); //sets field to empty
 
+        final View v = findViewById(android.R.id.content);
+        Intent myIntent = new Intent(v.getContext(), MainActivity.class);
+        startActivityForResult(myIntent, 0);
     }
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
