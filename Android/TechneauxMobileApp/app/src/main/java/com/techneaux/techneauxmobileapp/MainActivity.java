@@ -15,25 +15,29 @@ import android.widget.Toast;
 
 
 public class MainActivity extends AppCompatActivity {
-    private static Button submitLoginInfo;
-    private static EditText username;
-    private static EditText password;
-    private static TextView CSNumber;
-    public static final String MY_PREFS_NAME = "MyPrefsFile";
+    private static Button submitLoginInfo; //object to link to the submit login info layout object
+    private static EditText username; //object to link to the username layout object
+    private static EditText password; //object to link to the password layout object
+    private static TextView CSNumber; //object to link to the customer service number  layout object
+    public static final String MY_PREFS_NAME = "MyPrefsFile"; //file to store prefs for the app.
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        //********Initialize the layout objects to a variable for manipulation********
         submitLoginInfo = (Button) findViewById(R.id.loginSubmit);
         username = (EditText) findViewById(R.id.username);
         password = (EditText) findViewById(R.id.password);
         CSNumber = (TextView) findViewById(R.id.CSNumberText);
         setButtons();
+        //********End Initialize the layout objects to a variable for manipulation********
+
 
         SharedPreferences prefs = getSharedPreferences(MY_PREFS_NAME, MODE_PRIVATE);
         username.setText(prefs.getString("companyname",null));
-        password.setText(prefs.getString("password", null));
+        //password.setText(prefs.getString("password", null));
 
 
 
@@ -78,7 +82,7 @@ public class MainActivity extends AppCompatActivity {
 
                     SharedPreferences.Editor editor = getSharedPreferences(MY_PREFS_NAME, MODE_PRIVATE).edit();
                     editor.putString("companyname", sUsername);
-                    editor.putString("password", sPassword);
+                   // editor.putString("password", sPassword);
                     editor.commit();
 
                     Intent myIntent = new Intent(v.getContext(), RegistrationActivity.class);
@@ -113,7 +117,7 @@ public class MainActivity extends AppCompatActivity {
             
             SharedPreferences prefs = getSharedPreferences(MY_PREFS_NAME, MODE_PRIVATE);
             username.setText(prefs.getString("companyname", null));
-            password.setText(prefs.getString("password", null));
+            //password.setText(prefs.getString("password", null));
             Toast.makeText(getApplicationContext(), "Data Erased",
                     Toast.LENGTH_LONG).show();
             return true;
