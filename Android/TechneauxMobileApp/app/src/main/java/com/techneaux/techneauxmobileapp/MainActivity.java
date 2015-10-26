@@ -31,58 +31,64 @@ public class MainActivity extends AppCompatActivity {
         username = (EditText) findViewById(R.id.username);
         password = (EditText) findViewById(R.id.password);
         CSNumber = (TextView) findViewById(R.id.CSNumberText);
-        setButtons();
+        setButtons(); //function to initialize the two buttons (submit and call)
         //********End Initialize the layout objects to a variable for manipulation********
 
 
         SharedPreferences prefs = getSharedPreferences(MY_PREFS_NAME, MODE_PRIVATE);
-        username.setText(prefs.getString("companyname",null));
-        //password.setText(prefs.getString("password", null));
+        username.setText(prefs.getString("companyname",null)); // init username to what was stored
 
 
 
     }
+
+    /**
+     * Preconditions: None
+     * Post Conditions: Buttons have functional actions upon click
+     * Parameters: None
+     * Use: Only needs to be called once to set the onclick methods.
+     */
     private void setButtons()
     {
+        //********Customer Service Call Phone ********
         CSNumber.setOnClickListener(new Button.OnClickListener() {
 
             public void onClick(View v) {
 
-                String phone_no= "5045540101";
-                Intent callIntent = new Intent(Intent.ACTION_CALL);
-                callIntent.setData(Uri.parse("tel:"+phone_no));
-                startActivity(callIntent);
+                String phone_no= "5045540101"; //number to call
+                Intent callIntent = new Intent(Intent.ACTION_CALL); // making new intent object
+                                                                    // to switch screen
+                callIntent.setData(Uri.parse("tel:"+phone_no)); //define screen to switch to with parameters
+                startActivity(callIntent); //switch
 
             }
         });
+        //********End Customer Service Call Phone ********
 
 
-
+        //********Submit Login Info ********
         submitLoginInfo.setOnClickListener(new Button.OnClickListener() {
 
             public void onClick(View v) {
-                String sUsername = username.getText().toString();
-                String sPassword = password.getText().toString();
-                if(sUsername.matches(""))
+                String sUsername = username.getText().toString(); //get text from username layout object
+                String sPassword = password.getText().toString(); //get text from password layout object
+
+                if(sUsername.matches("")) //tests to see if Username field has text
                 {
                     Toast.makeText(getApplicationContext(), "Username not entered!",
                             Toast.LENGTH_LONG).show();
                     return;
                 }
-                else if(sPassword.matches(""))
+                else if(sPassword.matches("")) //tests to see if Password field has text
                 {
                     Toast.makeText(getApplicationContext(), "Password not entered!",
                             Toast.LENGTH_LONG).show();
                     return;
                 }
-                else
+                else //username & password is accepted, save company name and switch to next screen,
                 {
-                    Toast.makeText(getApplicationContext(), "Username: " + sUsername + " Password: " + sPassword,
-                            Toast.LENGTH_LONG).show();
-
                     SharedPreferences.Editor editor = getSharedPreferences(MY_PREFS_NAME, MODE_PRIVATE).edit();
                     editor.putString("companyname", sUsername);
-                   // editor.putString("password", sPassword);
                     editor.commit();
 
                     Intent myIntent = new Intent(v.getContext(), RegistrationActivity.class);
@@ -93,6 +99,7 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
+        //********End Submit Login Info ********
     }
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -109,15 +116,13 @@ public class MainActivity extends AppCompatActivity {
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.wipe_data) {
+        if (id == R.id.wipe_data) { //wipes all data from login screen
             SharedPreferences.Editor editor = getSharedPreferences(MY_PREFS_NAME, MODE_PRIVATE).edit();
-            editor.putString("companyname", "");
-            editor.putString("password", "");
+            editor.putString("companyname", null);
             editor.commit();
-            
-            SharedPreferences prefs = getSharedPreferences(MY_PREFS_NAME, MODE_PRIVATE);
-            username.setText(prefs.getString("companyname", null));
-            //password.setText(prefs.getString("password", null));
+
+            username.setText(null);
+            password.setText(null);
             Toast.makeText(getApplicationContext(), "Data Erased",
                     Toast.LENGTH_LONG).show();
             return true;
