@@ -1,5 +1,6 @@
 package com.techneaux.techneauxmobileapp;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -11,7 +12,8 @@ import android.widget.Toast;
 
 public class RegistrationActivity extends AppCompatActivity {
 
-    Button verifyButton;    // Create button
+    private Button verifyButton;    // Create button
+    public static final String MY_PREFS_NAME = "MyPrefsFile"; //file to store prefs for the app.
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,7 +31,7 @@ public class RegistrationActivity extends AppCompatActivity {
         });
     }
 
-    //private Button submitButton;
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -47,6 +49,8 @@ public class RegistrationActivity extends AppCompatActivity {
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.wipe_data) {
+            SharedPreferences.Editor editor = getSharedPreferences(MY_PREFS_NAME, MODE_PRIVATE).edit();
+            MainActivity.wipeData(editor);
             Toast.makeText(getApplicationContext(), "Data Erased",
                     Toast.LENGTH_LONG).show();
             return true;

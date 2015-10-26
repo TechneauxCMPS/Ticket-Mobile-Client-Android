@@ -55,10 +55,10 @@ public class MainActivity extends AppCompatActivity {
 
             public void onClick(View v) {
 
-                String phone_no= "5045540101"; //number to call
+                String phone_no = "5045540101"; //number to call
                 Intent callIntent = new Intent(Intent.ACTION_CALL); // making new intent object
-                                                                    // to switch screen
-                callIntent.setData(Uri.parse("tel:"+phone_no)); //define screen to switch to with parameters
+                // to switch screen
+                callIntent.setData(Uri.parse("tel:" + phone_no)); //define screen to switch to with parameters
                 startActivity(callIntent); //switch
 
             }
@@ -73,19 +73,17 @@ public class MainActivity extends AppCompatActivity {
                 String sUsername = username.getText().toString(); //get text from username layout object
                 String sPassword = password.getText().toString(); //get text from password layout object
 
-                if(sUsername.matches("")) //tests to see if Username field has text
+                if (sUsername.matches("")) //tests to see if Username field has text
                 {
                     Toast.makeText(getApplicationContext(), "Username not entered!",
                             Toast.LENGTH_LONG).show();
                     return;
-                }
-                else if(sPassword.matches("")) //tests to see if Password field has text
+                } else if (sPassword.matches("")) //tests to see if Password field has text
                 {
                     Toast.makeText(getApplicationContext(), "Password not entered!",
                             Toast.LENGTH_LONG).show();
                     return;
-                }
-                else //username & password is accepted, save company name and switch to next screen,
+                } else //username & password is accepted, save company name and switch to next screen,
                 {
                     SharedPreferences.Editor editor = getSharedPreferences(MY_PREFS_NAME, MODE_PRIVATE).edit();
                     editor.putString("companyname", sUsername);
@@ -107,7 +105,22 @@ public class MainActivity extends AppCompatActivity {
         getMenuInflater().inflate(R.menu.menu_main, menu);
         return true;
     }
+    /**
+     * Preconditions: None
+     * Post Conditions: login fields are wiped out
+     * Parameters: None
+     * Use: whenever wipe data button is used in app.
+     */
+    public static void wipeData(SharedPreferences.Editor editor)
+    {
 
+
+        editor.putString("companyname", null); //Wipe out company name
+        editor.commit();
+
+        username.setText(null); //sets field to empty
+        password.setText(null); //sets field to empty
+    }
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will
@@ -118,13 +131,9 @@ public class MainActivity extends AppCompatActivity {
         //noinspection SimplifiableIfStatement
         if (id == R.id.wipe_data) { //wipes all data from login screen
             SharedPreferences.Editor editor = getSharedPreferences(MY_PREFS_NAME, MODE_PRIVATE).edit();
-            editor.putString("companyname", null);
-            editor.commit();
-
-            username.setText(null);
-            password.setText(null);
+            wipeData(editor);
             Toast.makeText(getApplicationContext(), "Data Erased",
-                    Toast.LENGTH_LONG).show();
+                    Toast.LENGTH_LONG).show(); // display confirmation message
             return true;
         }
 
