@@ -14,7 +14,8 @@
         android:layout_centerHorizontal="true"
         android:layout_marginTop="57dp"
         android:hint="Company Name"
-        android:textColor="@android:color/black" />
+        android:textColor="@android:color/black"
+        android:maxLength="64"/>
 
     <EditText
         android:layout_width="wrap_content"
@@ -27,7 +28,8 @@
         android:layout_below="@+id/username"
         android:layout_alignLeft="@+id/username"
         android:layout_alignStart="@+id/username"
-        android:textColor="@android:color/black" />
+        android:textColor="@android:color/black"
+        android:maxLength="16"/>
 
     <Button
         android:layout_width="wrap_content"

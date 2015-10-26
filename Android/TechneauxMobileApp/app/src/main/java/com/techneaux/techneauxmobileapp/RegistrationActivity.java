@@ -4,11 +4,14 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.text.SpannableString;
+import android.text.style.UnderlineSpan;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.regex.Matcher;
@@ -21,6 +24,7 @@ public class RegistrationActivity extends AppCompatActivity {
     private static EditText lastname; //object to link to the password layout object
     private static EditText phonenumber; //object to link to the username layout object
     private static EditText emailaddress; //object to link to the password layout object
+    private static TextView loggedInName; //object to link to the companyName layout object
 
     public static final String MY_PREFS_NAME = "MyPrefsFile"; //file to store prefs for the app.
 
@@ -34,6 +38,8 @@ public class RegistrationActivity extends AppCompatActivity {
         lastname = (EditText) findViewById(R.id.lastname);
         phonenumber = (EditText) findViewById(R.id.Phone);
         emailaddress = (EditText) findViewById(R.id.emailaddress);
+        emailaddress = (EditText) findViewById(R.id.emailaddress);
+        loggedInName = (TextView) findViewById(R.id.companynameLoggedIn);
         setButtons();
 
         SharedPreferences prefs = getSharedPreferences(MY_PREFS_NAME, MODE_PRIVATE);
@@ -41,6 +47,11 @@ public class RegistrationActivity extends AppCompatActivity {
         lastname.setText(prefs.getString("emp_lastname", null)); // init last name to what was stored
         phonenumber.setText(prefs.getString("emp_phonenumber", null)); // init phone number to what was stored
         emailaddress.setText(prefs.getString("emp_emailaddress", null)); // init email address to what was stored
+
+        String mystring=new String("Company Name: " + prefs.getString("companyname" , null));
+        SpannableString content = new SpannableString(mystring);
+        content.setSpan(new UnderlineSpan(), 14 , mystring.length(), 0);
+        loggedInName.setText(content); // init email address to what was stored
 
     }
 
