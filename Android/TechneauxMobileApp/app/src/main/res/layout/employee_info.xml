@@ -23,9 +23,10 @@
         android:id="@+id/firstname"
         android:layout_marginTop="74dp"
         android:hint="First Name"
-        android:layout_below="@+id/textView"
+        android:layout_below="@+id/companynameLoggedIn"
         android:layout_centerHorizontal="true"
-        android:maxLength="32"/>
+        android:maxLength="32"
+        android:singleLine="true"/>
 
     //Last Name
     <EditText
@@ -38,7 +39,8 @@
         android:layout_below="@+id/firstname"
         android:layout_alignLeft="@+id/firstname"
         android:layout_alignStart="@+id/firstname"
-        android:maxLength="32"/>
+        android:maxLength="32"
+        android:singleLine="true"/>
 
     //Phone Number
     <EditText
@@ -51,7 +53,8 @@
         android:layout_below="@+id/lastname"
         android:layout_alignLeft="@+id/lastname"
         android:layout_alignStart="@+id/lastname"
-        android:maxLength="10" />
+        android:maxLength="10"
+        android:singleLine="true"/>
 
     //E-mail address
     <EditText
@@ -64,7 +67,8 @@
         android:layout_below="@+id/Phone"
         android:layout_alignLeft="@+id/Phone"
         android:layout_alignStart="@+id/Phone"
-        android:maxLength="64"/>
+        android:maxLength="64"
+        android:singleLine="true"/>
 
     //Submit Button
     <Button

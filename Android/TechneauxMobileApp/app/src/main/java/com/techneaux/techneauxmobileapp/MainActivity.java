@@ -45,6 +45,10 @@ public class MainActivity extends AppCompatActivity {
             Intent myIntent = new Intent(v.getContext(), RegistrationActivity.class);
             startActivityForResult(myIntent, 0);
         }
+        else {
+            Intent myIntent = new Intent(v.getContext(), TicketActivity.class);
+            startActivityForResult(myIntent, 0);
+        }
 
 
 

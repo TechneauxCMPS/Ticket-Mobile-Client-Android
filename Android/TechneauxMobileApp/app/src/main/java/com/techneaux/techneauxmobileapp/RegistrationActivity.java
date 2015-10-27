@@ -52,7 +52,14 @@ public class RegistrationActivity extends AppCompatActivity {
         String mystring=new String("Company Name: " + prefs.getString("companyname" , null));
         SpannableString content = new SpannableString(mystring);
         content.setSpan(new UnderlineSpan(), 14 , mystring.length(), 0);
-        loggedInName.setText(content); // init email address to what was stored
+        loggedInName.setText(content); // init companyname to what was stored
+        final View v = findViewById(android.R.id.content);
+
+        if( (prefs.getInt("screen_state",0) == 3  ))
+        {
+            Intent myIntent = new Intent(v.getContext(), TicketActivity.class);
+            startActivityForResult(myIntent, 0);
+        }
 
     }
 
@@ -114,7 +121,12 @@ public class RegistrationActivity extends AppCompatActivity {
                     editor.putString("emp_lastname", sLastName);
                     editor.putString("emp_phonenumber", sPhone);
                     editor.putString("emp_emailaddress", sEmail);
+                    editor.putInt("screen_state", 3);
                     editor.commit();
+
+                    Intent myIntent = new Intent(v.getContext(), TicketActivity.class);
+                    startActivityForResult(myIntent, 0);
+
                     Toast.makeText(getApplicationContext(), "Information has been verified.",
                             Toast.LENGTH_LONG).show();
                     return;

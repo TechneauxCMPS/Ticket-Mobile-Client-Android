@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent" android:layout_height="match_parent">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Error: Not Set"
+        android:id="@+id/ticket_companynameLoggedIn"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:text="Error: Not Set"
+        android:id="@+id/ticket_employeename"
+        android:layout_below="@+id/ticket_companynameLoggedIn"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:text="Error: Not Set"
+        android:id="@+id/ticket_phonenumber"
+        android:layout_below="@+id/ticket_employeename"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:text="Error: Not Set"
+        android:id="@+id/ticket_emailaddress"
+        android:layout_below="@+id/ticket_phonenumber"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:inputType="textPersonName"
+        android:ems="10"
+        android:id="@+id/locationsite"
+        android:singleLine="true"
+        android:hint="Location"
+        android:maxLength="64"
+        android:layout_below="@+id/ticket_emailaddress"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="31dp" />
+
+
+
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:inputType="textPersonName"
+        android:ems="10"
+        android:id="@+id/ticket_description"
+        android:singleLine="true"
+        android:hint="Description of Issue"
+        android:maxLength="64"
+        android:layout_below="@+id/locationsite"
+        android:layout_centerHorizontal="true"
+        android:maxLines="7" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Submit Ticket"
+        android:id="@+id/SubmitTicketBTN"
+        android:singleLine="false"
+        android:layout_below="@+id/ticket_description"
+        android:layout_alignLeft="@+id/ticket_description"
+        android:layout_alignStart="@+id/ticket_description"
+        android:layout_marginLeft="32dp"
+        android:layout_marginStart="32dp" />
+
+</RelativeLayout>
