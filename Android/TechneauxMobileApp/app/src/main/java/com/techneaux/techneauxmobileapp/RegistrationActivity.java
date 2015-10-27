@@ -196,24 +196,25 @@ public class RegistrationActivity extends AppCompatActivity {
      * Parameters: None
      * Use: whenever wipe data button is used in app.
      */
-    public void wipeData(SharedPreferences.Editor editor)
+    public static void wipeData(SharedPreferences.Editor editor,SharedPreferences prefs )
     {
+        if(!(prefs.getInt("screen_state",0) < 2  )) {
+
+            firstname.setText(null); //sets field to empty
+            lastname.setText(null); //sets field to empty
+            phonenumber.setText(null); //sets field to empty
+            emailaddress.setText(null); //sets field to empty
+        }
         editor.putString("emp_firstname", null);
         editor.putString("emp_lastname", null);
         editor.putString("emp_phonenumber", null);
         editor.putString("emp_emailaddress", null);
-
-
+        editor.putInt("screen_state", 0);
         editor.commit();
 
-        firstname.setText(null); //sets field to empty
-        lastname.setText(null); //sets field to empty
-        phonenumber.setText(null); //sets field to empty
-        emailaddress.setText(null); //sets field to empty
 
-        final View v = findViewById(android.R.id.content);
-        Intent myIntent = new Intent(v.getContext(), MainActivity.class);
-        startActivityForResult(myIntent, 0);
+
+
     }
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -225,8 +226,12 @@ public class RegistrationActivity extends AppCompatActivity {
         //noinspection SimplifiableIfStatement
         if (id == R.id.wipe_data) {
             SharedPreferences.Editor editor = getSharedPreferences(MY_PREFS_NAME, MODE_PRIVATE).edit();
+            SharedPreferences prefs = getSharedPreferences(MY_PREFS_NAME, MODE_PRIVATE);
             MainActivity.wipeData(editor);
-            wipeData(editor);
+            wipeData(editor,prefs);
+            final View v = findViewById(android.R.id.content);
+            Intent myIntent = new Intent(v.getContext(), MainActivity.class);
+            startActivityForResult(myIntent, 0);
             Toast.makeText(getApplicationContext(), "Data Erased",
                     Toast.LENGTH_LONG).show();
             return true;

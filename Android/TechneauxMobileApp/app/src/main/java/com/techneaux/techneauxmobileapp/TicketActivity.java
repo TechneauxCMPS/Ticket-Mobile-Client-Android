@@ -70,11 +70,16 @@ public class TicketActivity  extends AppCompatActivity {
         phonenumber.setText(content);
         //end phone number read
 
+        //email read
         mystring=new String("Email Address: " +prefs.getString( "emp_emailaddress", null));
         content = new SpannableString(mystring);
         content.setSpan(new UnderlineSpan(), 15, mystring.length(), 0);
         emailaddress.setText(content);
+        //email end read
 
+        //location read
+        Location.setText(prefs.getString("ticket_location", null));
+        //end location read
 
 
     }
@@ -104,8 +109,21 @@ public class TicketActivity  extends AppCompatActivity {
                     return;
                 } else //username & password is accepted, save company name and switch to next screen,
                 {
-                    Toast.makeText(getApplicationContext(), "Ticket Sent Successfully!",
+
+                    SharedPreferences.Editor editor = getSharedPreferences(MY_PREFS_NAME, MODE_PRIVATE).edit();
+                    editor.putString("ticket_location", sLocation);
+                    editor.commit();
+
+
+                    Toast.makeText(getApplicationContext(), "Ticket Sent Successfully!\n\n"
+                                    +  companyname.getText().toString() + "\nLocation: "
+                                    +Location.getText().toString() +  "\n" +
+                                    employeename.getText().toString()  +"\n"
+                                    +phonenumber.getText().toString()  + "\n"
+                                    +emailaddress.getText().toString() + "\nDescription: "
+                                    + Description.getText().toString(),
                             Toast.LENGTH_LONG).show();
+                    Description.setText("");
                     return;
                 }
             }
@@ -139,11 +157,27 @@ public class TicketActivity  extends AppCompatActivity {
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.wipe_data) {
-
+            SharedPreferences.Editor editor = getSharedPreferences(MY_PREFS_NAME, MODE_PRIVATE).edit();
+            SharedPreferences prefs = getSharedPreferences(MY_PREFS_NAME, MODE_PRIVATE);
+            MainActivity.wipeData(editor);
+            RegistrationActivity.wipeData(editor,prefs);
+            wipeData(editor);
+            final View v = findViewById(android.R.id.content);
+            Intent myIntent = new Intent(v.getContext(), MainActivity.class);
+            startActivityForResult(myIntent, 0);
             return true;
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    public static void wipeData(SharedPreferences.Editor editor)
+    {
+        editor.putString("ticket_location", null);
+        editor.putInt("screen_state", 0);
+        editor.commit();
+
+
     }
 
 }

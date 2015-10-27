@@ -42,10 +42,14 @@ public class MainActivity extends AppCompatActivity {
 
         if( !(prefs.getInt("screen_state",0) < 2  ))
         {
+            Toast.makeText(getApplicationContext(), "Page 2",
+                    Toast.LENGTH_LONG).show();
             Intent myIntent = new Intent(v.getContext(), RegistrationActivity.class);
             startActivityForResult(myIntent, 0);
         }
-        else {
+        else if( (prefs.getInt("screen_state",0) == 3  )) {
+            Toast.makeText(getApplicationContext(), "Page 3",
+                    Toast.LENGTH_LONG).show();
             Intent myIntent = new Intent(v.getContext(), TicketActivity.class);
             startActivityForResult(myIntent, 0);
         }
