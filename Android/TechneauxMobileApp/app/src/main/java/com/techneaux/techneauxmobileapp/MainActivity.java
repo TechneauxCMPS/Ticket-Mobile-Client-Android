@@ -40,7 +40,7 @@ public class MainActivity extends AppCompatActivity {
         username.setText(prefs.getString("companyname",null)); // init username to what was stored
         final View v = findViewById(android.R.id.content);
 
-        if( !(prefs.getInt("screen_state",0) < 2  ))
+        if( (prefs.getInt("screen_state",0) == 2  ))
         {
             Toast.makeText(getApplicationContext(), "Page 2",
                     Toast.LENGTH_LONG).show();
