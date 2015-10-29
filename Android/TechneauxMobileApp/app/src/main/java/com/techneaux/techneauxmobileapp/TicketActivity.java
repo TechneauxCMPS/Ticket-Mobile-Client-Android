@@ -167,6 +167,15 @@ public class TicketActivity  extends AppCompatActivity {
             startActivityForResult(myIntent, 0);
             return true;
         }
+        if(id == R.id.EmployeeCredentials)
+        {
+            SharedPreferences.Editor editor = getSharedPreferences(MY_PREFS_NAME, MODE_PRIVATE).edit();;
+            editor.putInt("screen_state", 2);
+            editor.commit();
+            final View v = findViewById(android.R.id.content);
+            Intent myIntent = new Intent(v.getContext(), RegistrationActivity.class);
+            startActivityForResult(myIntent, 0);
+        }
 
         return super.onOptionsItemSelected(item);
     }
