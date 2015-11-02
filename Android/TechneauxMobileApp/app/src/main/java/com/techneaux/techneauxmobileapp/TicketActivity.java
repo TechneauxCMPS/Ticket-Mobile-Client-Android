@@ -1,8 +1,11 @@
 package com.techneaux.techneauxmobileapp;
 
+import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.ClipData;
 import android.content.ClipboardManager;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
@@ -11,20 +14,24 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
+import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.text.SpannableString;
 import android.text.style.UnderlineSpan;
 import android.util.Base64;
 import android.view.KeyEvent;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RadioGroup;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -52,9 +59,9 @@ public class TicketActivity  extends AppCompatActivity {
     boolean isImageFitToScreen;
 
     private static final int CAMERA_REQUEST = 1888;
-    private ImageView imageView;
-    private ImageView tempImageView;
+    private static ImageView imageView;
 
+    private static Bitmap photo;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,7 +75,7 @@ public class TicketActivity  extends AppCompatActivity {
         CameraBTN = (Button) this.findViewById(R.id.cameraBTN);
         Location = (EditText) findViewById(R.id.locationsite);
         Description = (EditText) findViewById(R.id.ticket_description);
-
+        imageView = (ImageView)this.findViewById(R.id.imageView);
         setButtons();
 
         SharedPreferences prefs = getSharedPreferences(MY_PREFS_NAME, MODE_PRIVATE);
@@ -107,6 +114,7 @@ public class TicketActivity  extends AppCompatActivity {
         String base = prefs.getString("ticket_photo", null);
         if (base != null) {
             byte[] imageAsBytes = Base64.decode(base.getBytes(), Base64.DEFAULT);
+            photo = BitmapFactory.decodeByteArray(imageAsBytes, 0, imageAsBytes.length);
             imageView.setImageBitmap(
                     BitmapFactory.decodeByteArray(imageAsBytes, 0, imageAsBytes.length));
         }
@@ -162,7 +170,7 @@ public class TicketActivity  extends AppCompatActivity {
 
 
         });
-        this.imageView = (ImageView)this.findViewById(R.id.imageView);
+
 
         CameraBTN.setOnClickListener(new View.OnClickListener() {
 
@@ -172,14 +180,41 @@ public class TicketActivity  extends AppCompatActivity {
                 startActivityForResult(cameraIntent, CAMERA_REQUEST);
             }
         });
+        imageView.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                loadPhoto(imageView);
+            }
+        });
+
+
+
+
+
 
 
     }
+    private void loadPhoto(ImageView imageView) {
 
+        ImageView tempImageView = imageView;
+
+
+        AlertDialog.Builder imageDialog = new AlertDialog.Builder(this);
+        LayoutInflater inflater = (LayoutInflater) this.getSystemService(LAYOUT_INFLATER_SERVICE);
+
+        View layout = inflater.inflate(R.layout.photo_preview, null);
+        ImageView image = (ImageView) layout.findViewById(R.id.imageView2);
+        image.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,1500 ));
+        image.setImageDrawable(tempImageView.getDrawable());
+        imageDialog.setView(layout);
+        imageDialog.create();
+        imageDialog.show();
+    }
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == CAMERA_REQUEST && resultCode == RESULT_OK) {
-            Bitmap photo = (Bitmap) data.getExtras().get("data");
+            photo = (Bitmap) data.getExtras().get("data");
             imageView.setImageBitmap(photo);
             ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
             photo.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream);
@@ -189,6 +224,8 @@ public class TicketActivity  extends AppCompatActivity {
             SharedPreferences.Editor editor = getSharedPreferences(MY_PREFS_NAME, MODE_PRIVATE).edit();
             editor.putString("ticket_photo", encoded);
             editor.commit();
+
+
         }
     }
     @Override
