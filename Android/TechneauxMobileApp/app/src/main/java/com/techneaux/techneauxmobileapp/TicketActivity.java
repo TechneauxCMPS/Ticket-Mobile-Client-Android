@@ -1,19 +1,35 @@
 package com.techneaux.techneauxmobileapp;
 
+import android.app.Dialog;
+import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.Rect;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.text.SpannableString;
 import android.text.style.UnderlineSpan;
+import android.util.Base64;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.Window;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import java.io.ByteArrayOutputStream;
 
 /**
  * Created by CMD Drake on 10/27/2015.
@@ -32,6 +48,13 @@ public class TicketActivity  extends AppCompatActivity {
 
 
     private static Button SubmitTicketBTN;
+    private static Button CameraBTN;
+    boolean isImageFitToScreen;
+
+    private static final int CAMERA_REQUEST = 1888;
+    private ImageView imageView;
+    private ImageView tempImageView;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,8 +64,8 @@ public class TicketActivity  extends AppCompatActivity {
         companyname = (TextView) findViewById(R.id.ticket_companynameLoggedIn);
         phonenumber = (TextView) findViewById(R.id.ticket_phonenumber);
         emailaddress = (TextView) findViewById(R.id.ticket_emailaddress);
-        SubmitTicketBTN = (Button)  findViewById(R.id.SubmitTicketBTN);
-
+        SubmitTicketBTN = (Button) findViewById(R.id.SubmitTicketBTN);
+        CameraBTN = (Button) this.findViewById(R.id.cameraBTN);
         Location = (EditText) findViewById(R.id.locationsite);
         Description = (EditText) findViewById(R.id.ticket_description);
 
@@ -50,28 +73,28 @@ public class TicketActivity  extends AppCompatActivity {
 
         SharedPreferences prefs = getSharedPreferences(MY_PREFS_NAME, MODE_PRIVATE);
         //Company name read
-        String mystring=new String("Company Name: " + prefs.getString("companyname" , null));
+        String mystring = new String("Company Name: " + prefs.getString("companyname", null));
         SpannableString content = new SpannableString(mystring);
-        content.setSpan(new UnderlineSpan(), 14 , mystring.length(), 0);
+        content.setSpan(new UnderlineSpan(), 14, mystring.length(), 0);
         companyname.setText(content);
         //end company name read
 
         //employee name read
-        mystring=new String("Employee Name: " +prefs.getString( "emp_firstname", null) + " " +prefs.getString("emp_lastname", null));
+        mystring = new String("Employee Name: " + prefs.getString("emp_firstname", null) + " " + prefs.getString("emp_lastname", null));
         content = new SpannableString(mystring);
-        content.setSpan(new UnderlineSpan(), 15 , mystring.length(), 0);
+        content.setSpan(new UnderlineSpan(), 15, mystring.length(), 0);
         employeename.setText(content);
         //end name read
 
         //phone number read
-        mystring=new String("Phone Number: " + prefs.getString("emp_phonenumber", null));
+        mystring = new String("Phone Number: " + prefs.getString("emp_phonenumber", null));
         content = new SpannableString(mystring);
         content.setSpan(new UnderlineSpan(), 14, mystring.length(), 0);
         phonenumber.setText(content);
         //end phone number read
 
         //email read
-        mystring=new String("Email Address: " +prefs.getString( "emp_emailaddress", null));
+        mystring = new String("Email Address: " + prefs.getString("emp_emailaddress", null));
         content = new SpannableString(mystring);
         content.setSpan(new UnderlineSpan(), 15, mystring.length(), 0);
         emailaddress.setText(content);
@@ -81,8 +104,14 @@ public class TicketActivity  extends AppCompatActivity {
         Location.setText(prefs.getString("ticket_location", null));
         //end location read
 
-
+        String base = prefs.getString("ticket_photo", null);
+        if (base != null) {
+            byte[] imageAsBytes = Base64.decode(base.getBytes(), Base64.DEFAULT);
+            imageView.setImageBitmap(
+                    BitmapFactory.decodeByteArray(imageAsBytes, 0, imageAsBytes.length));
+        }
     }
+
     /**
      * Preconditions: None
      * Post Conditions: Buttons have functional actions upon click
@@ -116,20 +145,51 @@ public class TicketActivity  extends AppCompatActivity {
 
 
                     Toast.makeText(getApplicationContext(), "Ticket Sent Successfully!\n\n"
-                                    +  companyname.getText().toString() + "\nLocation: "
-                                    +Location.getText().toString() +  "\n" +
-                                    employeename.getText().toString()  +"\n"
-                                    +phonenumber.getText().toString()  + "\n"
-                                    +emailaddress.getText().toString() + "\nDescription: "
+                                    + companyname.getText().toString() + "\nLocation: "
+                                    + Location.getText().toString() + "\n" +
+                                    employeename.getText().toString() + "\n"
+                                    + phonenumber.getText().toString() + "\n"
+                                    + emailaddress.getText().toString() + "\nDescription: "
                                     + Description.getText().toString(),
                             Toast.LENGTH_LONG).show();
                     Description.setText("");
+                    editor.putString("ticket_photo", null);
+                    editor.commit();
+                    imageView.setImageBitmap(null);
                     return;
                 }
             }
 
 
         });
+        this.imageView = (ImageView)this.findViewById(R.id.imageView);
+
+        CameraBTN.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                Intent cameraIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
+                startActivityForResult(cameraIntent, CAMERA_REQUEST);
+            }
+        });
+
+
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == CAMERA_REQUEST && resultCode == RESULT_OK) {
+            Bitmap photo = (Bitmap) data.getExtras().get("data");
+            imageView.setImageBitmap(photo);
+            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+            photo.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream);
+            byte[] byteArray = byteArrayOutputStream .toByteArray();
+            String encoded = Base64.encodeToString(byteArray, Base64.DEFAULT);
+
+            SharedPreferences.Editor editor = getSharedPreferences(MY_PREFS_NAME, MODE_PRIVATE).edit();
+            editor.putString("ticket_photo", encoded);
+            editor.commit();
+        }
     }
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
@@ -182,6 +242,7 @@ public class TicketActivity  extends AppCompatActivity {
 
     public static void wipeData(SharedPreferences.Editor editor)
     {
+        editor.putString("ticket_photo", null);
         editor.putString("ticket_location", null);
         editor.putInt("screen_state", 0);
         editor.commit();

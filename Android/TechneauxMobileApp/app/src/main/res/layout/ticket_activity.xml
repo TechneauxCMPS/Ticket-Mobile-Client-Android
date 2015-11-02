@@ -69,7 +69,6 @@
         android:isScrollContainer="true"
         android:inputType="textMultiLine"
         android:minLines="1" />
-
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -77,9 +76,24 @@
         android:id="@+id/SubmitTicketBTN"
         android:singleLine="false"
         android:layout_below="@+id/ticket_description"
-        android:layout_alignLeft="@+id/ticket_description"
-        android:layout_alignStart="@+id/ticket_description"
-        android:layout_marginLeft="32dp"
-        android:layout_marginStart="32dp" />
+        android:layout_alignRight="@+id/ticket_description"
+        android:layout_alignEnd="@+id/ticket_description" />
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Take Photo"
+        android:id="@+id/cameraBTN"
+        android:layout_below="@+id/ticket_description"
+        android:layout_toLeftOf="@+id/SubmitTicketBTN" />
+
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/imageView"
+        android:layout_below="@+id/cameraBTN"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="30dp" />
+
 
 </RelativeLayout>
