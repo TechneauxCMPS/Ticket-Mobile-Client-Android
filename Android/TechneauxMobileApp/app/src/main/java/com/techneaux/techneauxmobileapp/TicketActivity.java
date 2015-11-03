@@ -224,7 +224,9 @@ public class TicketActivity  extends AppCompatActivity {
             SharedPreferences.Editor editor = getSharedPreferences(MY_PREFS_NAME, MODE_PRIVATE).edit();
             editor.putString("ticket_photo", encoded);
             editor.commit();
-
+           //ClipboardManager clipboard = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
+           //ClipData clip = ClipData.newPlainText("lol", encoded);
+           //clipboard.setPrimaryClip(clip);
 
         }
     }
