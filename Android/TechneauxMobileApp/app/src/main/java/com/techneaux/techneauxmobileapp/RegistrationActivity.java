@@ -198,7 +198,7 @@ public class RegistrationActivity extends AppCompatActivity {
      */
     public static void wipeData(SharedPreferences.Editor editor,SharedPreferences prefs )
     {
-        if(!(prefs.getInt("screen_state",0) < 2  )) {
+        if(!(prefs.getInt("screen_state",0) == 2  )) {
 
             firstname.setText(null); //sets field to empty
             lastname.setText(null); //sets field to empty

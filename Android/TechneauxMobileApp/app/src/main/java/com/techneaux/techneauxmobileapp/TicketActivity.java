@@ -260,7 +260,7 @@ public class TicketActivity  extends AppCompatActivity {
             SharedPreferences prefs = getSharedPreferences(MY_PREFS_NAME, MODE_PRIVATE);
             MainActivity.wipeData(editor);
             RegistrationActivity.wipeData(editor,prefs);
-            wipeData(editor);
+            wipeData(editor,prefs);
             final View v = findViewById(android.R.id.content);
             Intent myIntent = new Intent(v.getContext(), MainActivity.class);
             startActivityForResult(myIntent, 0);
@@ -279,14 +279,17 @@ public class TicketActivity  extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    public static void wipeData(SharedPreferences.Editor editor)
+    public static void wipeData(SharedPreferences.Editor editor,SharedPreferences prefs)
     {
         editor.putString("ticket_photo", null);
         editor.putString("ticket_location", null);
         editor.putInt("screen_state", 0);
         editor.commit();
+        if(!(prefs.getInt("screen_state",0) == 3  )) {
 
-
+            Location.setText(null);
+            Description.setText(null);
+        }
     }
 
 }
