@@ -15,6 +15,9 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -123,6 +126,19 @@ public class RegistrationActivity extends AppCompatActivity {
                     editor.putString("emp_emailaddress", sEmail);
                     editor.putInt("screen_state", 3);
                     editor.commit();
+
+                    JSONObject EmployeeInfo = new JSONObject();
+                    try {
+                        EmployeeInfo.put("firstName", sFirstName);
+                        EmployeeInfo.put("lastName", sLastName);
+                        EmployeeInfo.put("email", sPhone);
+                        EmployeeInfo.put("phoneNumber", sEmail);
+
+
+                    } catch (JSONException e) {
+                        // TODO Auto-generated catch block
+                        e.printStackTrace();
+                    }
 
                     Intent myIntent = new Intent(v.getContext(), TicketActivity.class);
                     startActivityForResult(myIntent, 0);

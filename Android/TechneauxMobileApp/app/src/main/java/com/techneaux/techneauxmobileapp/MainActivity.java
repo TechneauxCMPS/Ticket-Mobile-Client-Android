@@ -14,6 +14,9 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 
 public class MainActivity extends AppCompatActivity {
     private static Button submitLoginInfo; //object to link to the submit login info layout object
@@ -104,7 +107,18 @@ public class MainActivity extends AppCompatActivity {
                     editor.putInt("screen_state", 2);
 
                     editor.commit();
+                    JSONObject login = new JSONObject();
+                    try {
+                        login.put("companyID", sUsername);
+                        login.put("password", sPassword);
 
+
+                    } catch (JSONException e) {
+                        // TODO Auto-generated catch block
+                        e.printStackTrace();
+                    }
+                    Toast.makeText(getApplicationContext(), login.toString(),
+                            Toast.LENGTH_LONG).show();
                     Intent myIntent = new Intent(v.getContext(), RegistrationActivity.class);
                     startActivityForResult(myIntent, 0);
                     return;

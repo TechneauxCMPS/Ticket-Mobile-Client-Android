@@ -36,6 +36,9 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.ByteArrayOutputStream;
 
 /**
@@ -152,6 +155,20 @@ public class TicketActivity  extends AppCompatActivity {
                     editor.commit();
 
 
+                    SharedPreferences prefs = getSharedPreferences(MY_PREFS_NAME, MODE_PRIVATE);
+                    JSONObject TicketInfo = new JSONObject();
+                    try {
+                        TicketInfo.put("location", sLocation);
+                        TicketInfo.put("description", sDescription);
+                        TicketInfo.put("photo", prefs.getString("ticket_photo", null));
+
+
+
+                    } catch (JSONException e) {
+                        // TODO Auto-generated catch block
+                        e.printStackTrace();
+                    }
+
                     Toast.makeText(getApplicationContext(), "Ticket Sent Successfully!\n\n"
                                     + companyname.getText().toString() + "\nLocation: "
                                     + Location.getText().toString() + "\n" +
@@ -224,6 +241,9 @@ public class TicketActivity  extends AppCompatActivity {
             SharedPreferences.Editor editor = getSharedPreferences(MY_PREFS_NAME, MODE_PRIVATE).edit();
             editor.putString("ticket_photo", encoded);
             editor.commit();
+
+
+
            //ClipboardManager clipboard = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
            //ClipData clip = ClipData.newPlainText("lol", encoded);
            //clipboard.setPrimaryClip(clip);
