@@ -117,8 +117,9 @@ public class MainActivity extends AppCompatActivity {
                         // TODO Auto-generated catch block
                         e.printStackTrace();
                     }
-                    Toast.makeText(getApplicationContext(), login.toString(),
+                    /*Toast.makeText(getApplicationContext(), login.toString(),
                             Toast.LENGTH_LONG).show();
+                    */
                     Intent myIntent = new Intent(v.getContext(), RegistrationActivity.class);
                     startActivityForResult(myIntent, 0);
                     return;

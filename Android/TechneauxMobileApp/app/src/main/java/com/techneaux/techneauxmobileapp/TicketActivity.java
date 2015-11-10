@@ -168,7 +168,8 @@ public class TicketActivity  extends AppCompatActivity {
                         // TODO Auto-generated catch block
                         e.printStackTrace();
                     }
-
+                    /*Toast.makeText(getApplicationContext(), TicketInfo.toString(),
+                            Toast.LENGTH_LONG).show();*/
                     Toast.makeText(getApplicationContext(), "Ticket Sent Successfully!\n\n"
                                     + companyname.getText().toString() + "\nLocation: "
                                     + Location.getText().toString() + "\n" +

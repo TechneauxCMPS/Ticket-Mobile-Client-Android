@@ -139,6 +139,8 @@ public class RegistrationActivity extends AppCompatActivity {
                         // TODO Auto-generated catch block
                         e.printStackTrace();
                     }
+                    /*Toast.makeText(getApplicationContext(), EmployeeInfo.toString(),
+                            Toast.LENGTH_LONG).show();*/
 
                     Intent myIntent = new Intent(v.getContext(), TicketActivity.class);
                     startActivityForResult(myIntent, 0);
