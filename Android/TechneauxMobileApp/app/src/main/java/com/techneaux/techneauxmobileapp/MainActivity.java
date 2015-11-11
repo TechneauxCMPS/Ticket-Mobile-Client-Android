@@ -117,9 +117,13 @@ public class MainActivity extends AppCompatActivity {
                         // TODO Auto-generated catch block
                         e.printStackTrace();
                     }
-                    /*Toast.makeText(getApplicationContext(), login.toString(),
+
+                    Thread t = new Thread(new API_Communications("http://ip.jsontest.com/",login));
+                    t.start();
+
+                    Toast.makeText(getApplicationContext(), API_Communications.result,
                             Toast.LENGTH_LONG).show();
-                    */
+
                     Intent myIntent = new Intent(v.getContext(), RegistrationActivity.class);
                     startActivityForResult(myIntent, 0);
                     return;
