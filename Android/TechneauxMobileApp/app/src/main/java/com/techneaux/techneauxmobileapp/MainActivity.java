@@ -118,10 +118,14 @@ public class MainActivity extends AppCompatActivity {
                         e.printStackTrace();
                     }
 
-                    Thread t = new Thread(new API_Communications("http://ip.jsontest.com/",login));
+                    Thread t = new Thread(new API_Communications("https://cmps.techneaux.com/login",login));
                     t.start();
+                    while(API_Communications.result == null)
+                    {}
 
-                    Toast.makeText(getApplicationContext(), API_Communications.result,
+                    String result = API_Communications.result;
+
+                    Toast.makeText(getApplicationContext(), result,
                             Toast.LENGTH_LONG).show();
 
                     Intent myIntent = new Intent(v.getContext(), RegistrationActivity.class);
