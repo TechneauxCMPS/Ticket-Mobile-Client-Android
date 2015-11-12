@@ -55,6 +55,7 @@ public class API_Communications implements Runnable{
     public API_Communications(String setUrl, JSONObject setJson) {
         url = setUrl;
         json = setJson;
+        result = null;
     }
 
 
