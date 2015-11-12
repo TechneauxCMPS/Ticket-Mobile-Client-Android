@@ -94,7 +94,7 @@ public class RegistrationActivity extends AppCompatActivity {
                             Toast.LENGTH_LONG).show();
                     return;
                 }
-                if (sPhone.matches("")) //tests to see if phone number field has text
+               /* if (sPhone.matches("")) //tests to see if phone number field has text
                 {
                     Toast.makeText(getApplicationContext(), "Phone Number not entered!",
                             Toast.LENGTH_LONG).show();
@@ -106,7 +106,7 @@ public class RegistrationActivity extends AppCompatActivity {
                     Toast.makeText(getApplicationContext(), "Phone Number not valid!",
                             Toast.LENGTH_LONG).show();
                     return;
-                }
+                }*/
                 if (sEmail.matches("")) //tests to see if email address field has text
                 {
                     Toast.makeText(getApplicationContext(), "Email Address not entered!",
@@ -126,27 +126,57 @@ public class RegistrationActivity extends AppCompatActivity {
                     editor.putString("emp_emailaddress", sEmail);
                     editor.putInt("screen_state", 3);
                     editor.commit();
-
+                    SharedPreferences prefs = getSharedPreferences(MY_PREFS_NAME, MODE_PRIVATE);
                     JSONObject EmployeeInfo = new JSONObject();
                     try {
                         EmployeeInfo.put("firstName", sFirstName);
                         EmployeeInfo.put("lastName", sLastName);
-                        EmployeeInfo.put("email", sPhone);
-                        EmployeeInfo.put("phoneNumber", sEmail);
+                        EmployeeInfo.put("email", sEmail);
+                        EmployeeInfo.put("phoneNumber", sPhone);
+                        EmployeeInfo.put("authKey", prefs.getString("authKey",null));
 
 
                     } catch (JSONException e) {
                         // TODO Auto-generated catch block
                         e.printStackTrace();
                     }
-                    /*Toast.makeText(getApplicationContext(), EmployeeInfo.toString(),
-                            Toast.LENGTH_LONG).show();*/
 
-                    Intent myIntent = new Intent(v.getContext(), TicketActivity.class);
-                    startActivityForResult(myIntent, 0);
+                    Thread thread = new Thread(new API_Communications("https://cmps.techneaux.com/update-employee", EmployeeInfo));
+                    thread.start();
+                    while (API_Communications.result == null) {
+                    }
 
-                    Toast.makeText(getApplicationContext(), "Information has been verified.",
-                            Toast.LENGTH_LONG).show();
+                    String result = API_Communications.result;
+
+                    JSONObject obj = null;
+                    try {
+
+                        obj = new JSONObject(result);
+
+
+                    } catch (Throwable t) {
+                        Toast.makeText(getApplicationContext(), "Invalid Response from Server, please try again.\n " + result,
+                                Toast.LENGTH_LONG).show();
+
+                    }
+                    String error = null;
+                    try {
+                        error = obj.get("niceMessage").toString();
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+
+                    if (error == null) {
+
+                        Intent myIntent = new Intent(v.getContext(), TicketActivity.class);
+                        startActivityForResult(myIntent, 0);
+                    }
+                    else
+                    {
+                        Toast.makeText(getApplicationContext(), error,
+                                Toast.LENGTH_LONG).show();
+                    }
+
                     return;
                 }
 

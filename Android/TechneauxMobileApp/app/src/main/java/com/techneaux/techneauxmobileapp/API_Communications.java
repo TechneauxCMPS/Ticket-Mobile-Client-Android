@@ -60,6 +60,7 @@ public class API_Communications implements Runnable{
 
 
     public void run() {
+
         postData();
     }
 

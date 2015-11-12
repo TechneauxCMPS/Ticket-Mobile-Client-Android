@@ -118,18 +118,48 @@ public class MainActivity extends AppCompatActivity {
                         e.printStackTrace();
                     }
 
-                    Thread t = new Thread(new API_Communications("https://cmps.techneaux.com/login",login));
-                    t.start();
-                    while(API_Communications.result == null)
-                    {}
+                    Thread thread = new Thread(new API_Communications("https://cmps.techneaux.com/login", login));
+                    thread.start();
+                    while (API_Communications.result == null) {
+                    }
 
                     String result = API_Communications.result;
+                    JSONObject obj = null;
+                    try {
 
-                    Toast.makeText(getApplicationContext(), result,
-                            Toast.LENGTH_LONG).show();
+                        obj = new JSONObject(result);
 
-                    Intent myIntent = new Intent(v.getContext(), RegistrationActivity.class);
-                    startActivityForResult(myIntent, 0);
+
+                    } catch (Throwable t) {
+                        Toast.makeText(getApplicationContext(), "Invalid Response from Server, please try again.\n " + result,
+                                Toast.LENGTH_LONG).show();
+
+                    }
+                    String error = null;
+                    try {
+                        error = obj.get("niceMessage").toString();
+
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+
+                    if (error == null) {
+                        try {
+                            String authKey = obj.get("authKey").toString();
+                            editor.putString("authKey", authKey);
+
+                            editor.commit();
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                        Intent myIntent = new Intent(v.getContext(), RegistrationActivity.class);
+                        startActivityForResult(myIntent, 0);
+                    } else {
+                        Toast.makeText(getApplicationContext(), error,
+                                Toast.LENGTH_LONG).show();
+                    }
+
+
                     return;
                 }
 

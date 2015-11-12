@@ -16,6 +16,7 @@ import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
+import android.provider.ContactsContract;
 import android.support.v7.app.AppCompatActivity;
 import android.text.SpannableString;
 import android.text.style.UnderlineSpan;
@@ -161,29 +162,74 @@ public class TicketActivity  extends AppCompatActivity {
                         TicketInfo.put("location", sLocation);
                         TicketInfo.put("description", sDescription);
                         TicketInfo.put("photo", prefs.getString("ticket_photo", null));
-
+                        TicketInfo.put("authKey", prefs.getString("authKey",null));
 
 
                     } catch (JSONException e) {
                         // TODO Auto-generated catch block
                         e.printStackTrace();
                     }
-                    /*Toast.makeText(getApplicationContext(), TicketInfo.toString(),
-                            Toast.LENGTH_LONG).show();*/
-                    Toast.makeText(getApplicationContext(), "Ticket Sent Successfully!\n\n"
-                                    + companyname.getText().toString() + "\nLocation: "
-                                    + Location.getText().toString() + "\n" +
-                                    employeename.getText().toString() + "\n"
-                                    + phonenumber.getText().toString() + "\n"
-                                    + emailaddress.getText().toString() + "\nDescription: "
-                                    + Description.getText().toString(),
-                            Toast.LENGTH_LONG).show();
-                    Description.setText("");
-                    editor.putString("ticket_photo", null);
-                    editor.commit();
-                    imageView.setImageBitmap(null);
+
+                    Thread thread = new Thread(new API_Communications("https://cmps.techneaux.com/submit-ticket", TicketInfo));
+                    thread.start();
+                    while (API_Communications.result == null) {
+                    }
+
+                    String result = API_Communications.result;
+
+                    JSONObject obj = null;
+                    try {
+
+                        obj = new JSONObject(result);
+
+
+                    } catch (Throwable t) {
+                        Toast.makeText(getApplicationContext(), "Invalid Response from Server, please try again.\n " + result,
+                                Toast.LENGTH_LONG).show();
+
+                    }
+                    String error = null;
+                    try {
+                        error = obj.get("niceMessage").toString();
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                    String PhotoStatus = "";
+                    if (error == null) {
+
+                        if(prefs.getString("ticket_photo", null) == null)
+                        {
+                            PhotoStatus = "No Photo";
+                        }
+                        else
+                        {
+                            PhotoStatus = "Photo Attached";
+                        }
+
+                        Toast.makeText(getApplicationContext(), "Ticket Sent Successfully!\n\n"
+                                        + companyname.getText().toString() + "\nLocation: "
+                                        + Location.getText().toString() + "\n" +
+                                        employeename.getText().toString() + "\n"
+                                        + phonenumber.getText().toString() + "\n"
+                                        + emailaddress.getText().toString() + "\nDescription: "
+                                        + Description.getText().toString() + "\n Photo: "
+                                        + PhotoStatus,
+                                Toast.LENGTH_LONG).show();
+                        Description.setText("");
+                        editor.putString("ticket_photo", null);
+                        editor.commit();
+                        imageView.setImageBitmap(null);
+                    }
+                    else{
+
+                            Toast.makeText(getApplicationContext(), error,
+                                    Toast.LENGTH_LONG).show();
+
+                    }
+
                     return;
                 }
+
             }
 
 
