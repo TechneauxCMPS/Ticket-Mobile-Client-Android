@@ -129,11 +129,12 @@ public class RegistrationActivity extends AppCompatActivity {
                     SharedPreferences prefs = getSharedPreferences(MY_PREFS_NAME, MODE_PRIVATE);
                     JSONObject EmployeeInfo = new JSONObject();
                     try {
+                        EmployeeInfo.put("authKey", prefs.getString("authKey",null));
                         EmployeeInfo.put("firstName", sFirstName);
                         EmployeeInfo.put("lastName", sLastName);
                         EmployeeInfo.put("email", sEmail);
                         EmployeeInfo.put("phoneNumber", sPhone);
-                        EmployeeInfo.put("authKey", prefs.getString("authKey",null));
+
 
 
                     } catch (JSONException e) {
@@ -160,12 +161,14 @@ public class RegistrationActivity extends AppCompatActivity {
 
                     }
                     String error = null;
-                    try {
-                        error = obj.get("niceMessage").toString();
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
+                    if (obj.has("niceMessage")) {
+                        try {
+                            error = obj.get("niceMessage").toString();
 
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
                     if (error == null) {
 
                         Intent myIntent = new Intent(v.getContext(), TicketActivity.class);
@@ -253,11 +256,17 @@ public class RegistrationActivity extends AppCompatActivity {
             phonenumber.setText(null); //sets field to empty
             emailaddress.setText(null); //sets field to empty
         }
+        editor.putString("ticket_photo", null);
+        editor.putString("ticket_location", null);
+        editor.putInt("screen_state", 0);
         editor.putString("emp_firstname", null);
         editor.putString("emp_lastname", null);
         editor.putString("emp_phonenumber", null);
         editor.putString("emp_emailaddress", null);
         editor.putInt("screen_state", 0);
+        editor.putString("companyname", null); //Wipe out company name
+        editor.putInt("screen_state", 0); //Wipe out company name
+        editor.putString("authKey",null);
         editor.commit();
 
 

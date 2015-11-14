@@ -21,6 +21,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.text.SpannableString;
 import android.text.style.UnderlineSpan;
 import android.util.Base64;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -66,7 +67,7 @@ public class TicketActivity  extends AppCompatActivity {
     private static ImageView imageView;
 
     private static Bitmap photo;
-
+    private String photo_ticket;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -116,7 +117,10 @@ public class TicketActivity  extends AppCompatActivity {
         //end location read
 
         String base = prefs.getString("ticket_photo", null);
+        photo_ticket = "";
+
         if (base != null) {
+            photo_ticket=base;
             byte[] imageAsBytes = Base64.decode(base.getBytes(), Base64.DEFAULT);
             photo = BitmapFactory.decodeByteArray(imageAsBytes, 0, imageAsBytes.length);
             imageView.setImageBitmap(
@@ -159,17 +163,19 @@ public class TicketActivity  extends AppCompatActivity {
                     SharedPreferences prefs = getSharedPreferences(MY_PREFS_NAME, MODE_PRIVATE);
                     JSONObject TicketInfo = new JSONObject();
                     try {
+                        TicketInfo.put("authKey", prefs.getString("authKey",null));
                         TicketInfo.put("location", sLocation);
                         TicketInfo.put("description", sDescription);
-                        TicketInfo.put("photo", prefs.getString("ticket_photo", null));
-                        TicketInfo.put("authKey", prefs.getString("authKey",null));
+                        TicketInfo.put("photo", photo_ticket);
+
 
 
                     } catch (JSONException e) {
                         // TODO Auto-generated catch block
                         e.printStackTrace();
                     }
-
+                    Log.d("API", "In Ticket: START " + photo_ticket +" END");
+                    Log.d("API", "In Ticket Count: " + photo_ticket.length());
                     Thread thread = new Thread(new API_Communications("https://cmps.techneaux.com/submit-ticket", TicketInfo));
                     thread.start();
                     while (API_Communications.result == null) {
@@ -189,10 +195,13 @@ public class TicketActivity  extends AppCompatActivity {
 
                     }
                     String error = null;
-                    try {
-                        error = obj.get("niceMessage").toString();
-                    } catch (JSONException e) {
-                        e.printStackTrace();
+                    if (obj.has("niceMessage")) {
+                        try {
+                            error = obj.get("niceMessage").toString();
+
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
                     }
                     String PhotoStatus = "";
                     if (error == null) {
@@ -212,7 +221,7 @@ public class TicketActivity  extends AppCompatActivity {
                                         employeename.getText().toString() + "\n"
                                         + phonenumber.getText().toString() + "\n"
                                         + emailaddress.getText().toString() + "\nDescription: "
-                                        + Description.getText().toString() + "\n Photo: "
+                                        + Description.getText().toString() + "\nPhoto: "
                                         + PhotoStatus,
                                 Toast.LENGTH_LONG).show();
                         Description.setText("");
@@ -289,8 +298,7 @@ public class TicketActivity  extends AppCompatActivity {
             editor.putString("ticket_photo", encoded);
             editor.commit();
 
-
-
+            photo_ticket=encoded;
            //ClipboardManager clipboard = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
            //ClipData clip = ClipData.newPlainText("lol", encoded);
            //clipboard.setPrimaryClip(clip);
@@ -325,8 +333,14 @@ public class TicketActivity  extends AppCompatActivity {
         if (id == R.id.wipe_data) {
             SharedPreferences.Editor editor = getSharedPreferences(MY_PREFS_NAME, MODE_PRIVATE).edit();
             SharedPreferences prefs = getSharedPreferences(MY_PREFS_NAME, MODE_PRIVATE);
-            MainActivity.wipeData(editor);
-            RegistrationActivity.wipeData(editor,prefs);
+            try {
+                MainActivity.wipeData(editor);
+                RegistrationActivity.wipeData(editor, prefs);
+            }
+            catch(Exception e)
+            {
+                e.printStackTrace();
+            }
             wipeData(editor,prefs);
             final View v = findViewById(android.R.id.content);
             Intent myIntent = new Intent(v.getContext(), MainActivity.class);
@@ -351,7 +365,16 @@ public class TicketActivity  extends AppCompatActivity {
         editor.putString("ticket_photo", null);
         editor.putString("ticket_location", null);
         editor.putInt("screen_state", 0);
+        editor.putString("emp_firstname", null);
+        editor.putString("emp_lastname", null);
+        editor.putString("emp_phonenumber", null);
+        editor.putString("emp_emailaddress", null);
+        editor.putInt("screen_state", 0);
+        editor.putString("companyname", null); //Wipe out company name
+        editor.putInt("screen_state", 0); //Wipe out company name
+        editor.putString("authKey", null);
         editor.commit();
+
         if(!(prefs.getInt("screen_state",0) == 3  )) {
 
             Location.setText(null);

@@ -25,6 +25,7 @@ public class MainActivity extends AppCompatActivity {
     private static TextView CSNumber; //object to link to the customer service number  layout object
     public static final String MY_PREFS_NAME = "MyPrefsFile"; //file to store prefs for the app.
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -41,6 +42,7 @@ public class MainActivity extends AppCompatActivity {
 
         SharedPreferences prefs = getSharedPreferences(MY_PREFS_NAME, MODE_PRIVATE);
         username.setText(prefs.getString("companyname",null)); // init username to what was stored
+
         final View v = findViewById(android.R.id.content);
 
         if( (prefs.getInt("screen_state",0) == 2  ))
@@ -136,21 +138,24 @@ public class MainActivity extends AppCompatActivity {
 
                     }
                     String error = null;
-                    try {
-                        error = obj.get("niceMessage").toString();
-
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-
-                    if (error == null) {
+                    if (obj.has("niceMessage")) {
                         try {
-                            String authKey = obj.get("authKey").toString();
-                            editor.putString("authKey", authKey);
+                            error = obj.get("niceMessage").toString();
 
-                            editor.commit();
                         } catch (JSONException e) {
                             e.printStackTrace();
+                        }
+                    }
+                    if (obj.has("authKey")) {
+                        if (error == null) {
+                            try {
+                                String authKey = obj.get("authKey").toString();
+                                editor.putString("authKey", authKey);
+
+                                editor.commit();
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
                         }
                         Intent myIntent = new Intent(v.getContext(), RegistrationActivity.class);
                         startActivityForResult(myIntent, 0);
@@ -184,9 +189,19 @@ public class MainActivity extends AppCompatActivity {
     {
 
 
+        editor.putString("ticket_photo", null);
+        editor.putString("ticket_location", null);
+        editor.putInt("screen_state", 0);
+        editor.putString("emp_firstname", null);
+        editor.putString("emp_lastname", null);
+        editor.putString("emp_phonenumber", null);
+        editor.putString("emp_emailaddress", null);
+        editor.putInt("screen_state", 0);
         editor.putString("companyname", null); //Wipe out company name
         editor.putInt("screen_state", 0); //Wipe out company name
+        editor.putString("authKey",null);
         editor.commit();
+
 
         username.setText(null); //sets field to empty
         password.setText(null); //sets field to empty

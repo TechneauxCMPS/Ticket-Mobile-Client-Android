@@ -123,7 +123,7 @@ public class API_Communications implements Runnable{
 
             // Execute HTTP Post Request
             Log.d("API","json: " + json);
-            Log.d("API","http: " + httppost);
+            Log.d("API","Count: "+json.toString().length() );
             HttpResponse response = httpclient.execute(httppost);
 
             // for JSON:
