@@ -69,34 +69,6 @@
         android:isScrollContainer="true"
         android:inputType="textMultiLine"
         android:minLines="1" />
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Submit Ticket"
-        android:id="@+id/SubmitTicketBTN"
-        android:singleLine="false"
-        android:layout_marginTop="37dp"
-        android:layout_below="@+id/ticket_description"
-        android:layout_toLeftOf="@+id/cameraBTN"
-        android:layout_toStartOf="@+id/cameraBTN" />
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Take Photo"
-        android:id="@+id/cameraBTN"
-        android:layout_above="@+id/imageView"
-        android:layout_alignRight="@+id/ticket_description"
-        android:layout_alignEnd="@+id/ticket_description" />
-
-
-    <ImageView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/imageView"
-        android:layout_below="@+id/SubmitTicketBTN"
-        android:layout_toRightOf="@+id/SubmitTicketBTN"
-        android:layout_toEndOf="@+id/SubmitTicketBTN"
-        android:layout_marginTop="30dp" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -105,6 +77,44 @@
         android:layout_below="@+id/ticket_description"
         android:layout_centerHorizontal="true"
         android:textColor="#ff0000" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Submit Ticket"
+        android:id="@+id/SubmitTicketBTN"
+        android:singleLine="false"
+        android:layout_below="@+id/cameraBTN"
+        android:layout_centerHorizontal="true" />
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Take Photo"
+        android:id="@+id/cameraBTN"
+
+        android:layout_alignTop="@+id/clearPhoto"
+        android:layout_toLeftOf="@+id/clearPhoto"
+        android:layout_toStartOf="@+id/clearPhoto" />
+
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Clear Photo"
+        android:id="@+id/clearPhoto"
+
+        android:layout_below="@+id/ticketError"
+        android:layout_alignRight="@+id/ticket_description"
+        android:layout_alignEnd="@+id/ticket_description" />
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/imageView"
+        android:layout_marginTop="10dp"
+        android:layout_below="@+id/SubmitTicketBTN"
+        android:layout_toRightOf="@+id/cameraBTN"
+        android:layout_toEndOf="@+id/cameraBTN" />
 
 
 </RelativeLayout>

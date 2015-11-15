@@ -58,6 +58,7 @@ public class TicketActivity  extends AppCompatActivity {
     private static EditText Location; //object to link to the location layout object
     private static EditText Description; //object to link to the description layout object
     private static TextView ErrorTicket;
+    private static Button clearPhoto;
 
     private static Button SubmitTicketBTN;
     private static Button CameraBTN;
@@ -82,6 +83,7 @@ public class TicketActivity  extends AppCompatActivity {
         Description = (EditText) findViewById(R.id.ticket_description);
         imageView = (ImageView)this.findViewById(R.id.imageView);
         ErrorTicket = (TextView) this.findViewById(R.id.ticketError);
+        clearPhoto = (Button) this.findViewById(R.id.clearPhoto);
         setButtons();
 
         SharedPreferences prefs = getSharedPreferences(MY_PREFS_NAME, MODE_PRIVATE);
@@ -137,6 +139,7 @@ public class TicketActivity  extends AppCompatActivity {
      */
     private void setButtons()
     {
+
         // throws a toast saying information has been verfied when Verify button is clicked.
         SubmitTicketBTN.setOnClickListener(new Button.OnClickListener() {
             public void onClick(View v) {
@@ -249,7 +252,18 @@ public class TicketActivity  extends AppCompatActivity {
 
         });
 
+        clearPhoto.setOnClickListener(new View.OnClickListener() {
 
+            @Override
+            public void onClick(View v) {
+                SharedPreferences.Editor editor = getSharedPreferences(MY_PREFS_NAME, MODE_PRIVATE).edit();
+                photo_ticket="";
+                editor.putString("ticket_photo", null);
+                editor.commit();
+
+                imageView.setImageBitmap(null);
+            }
+        });
         CameraBTN.setOnClickListener(new View.OnClickListener() {
 
             @Override
