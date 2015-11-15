@@ -76,7 +76,16 @@
         android:layout_height="wrap_content"
         android:text="Verify"
         android:id="@+id/verifyButton"
+        android:layout_marginTop="52dp"
         android:layout_below="@+id/emailaddress"
         android:layout_centerHorizontal="true" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/employeeError"
+        android:layout_below="@+id/emailaddress"
+        android:layout_centerHorizontal="true"
+        android:textColor="#ff0000" />
 
 </RelativeLayout>

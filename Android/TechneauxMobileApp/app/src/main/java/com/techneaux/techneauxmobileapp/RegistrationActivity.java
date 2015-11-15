@@ -17,6 +17,7 @@ import android.widget.Toast;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.w3c.dom.Text;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -29,7 +30,7 @@ public class RegistrationActivity extends AppCompatActivity {
     private static EditText phonenumber; //object to link to the username layout object
     private static EditText emailaddress; //object to link to the password layout object
     private static TextView loggedInName; //object to link to the companyName layout object
-
+    private static TextView empError;
     public static final String MY_PREFS_NAME = "MyPrefsFile"; //file to store prefs for the app.
 
     @Override
@@ -44,6 +45,7 @@ public class RegistrationActivity extends AppCompatActivity {
         emailaddress = (EditText) findViewById(R.id.emailaddress);
         emailaddress = (EditText) findViewById(R.id.emailaddress);
         loggedInName = (TextView) findViewById(R.id.companynameLoggedIn);
+        empError = (TextView) findViewById(R.id.employeeError);
         setButtons();
 
         SharedPreferences prefs = getSharedPreferences(MY_PREFS_NAME, MODE_PRIVATE);
@@ -84,38 +86,39 @@ public class RegistrationActivity extends AppCompatActivity {
 
                 if (sFirstName.matches("")) //tests to see if first name field has text
                 {
-                    Toast.makeText(getApplicationContext(), "Employee First Name not entered!",
-                            Toast.LENGTH_LONG).show();
+                    empError.setText("Employee First Name not entered!");
+
                     return;
                 }
                 if (sLastName.matches("")) //tests to see if last name field has text
                 {
-                    Toast.makeText(getApplicationContext(), "Employee Last Name not entered!",
-                            Toast.LENGTH_LONG).show();
+                    empError.setText("Employee Last Name not entered!");
+
                     return;
                 }
-               /* if (sPhone.matches("")) //tests to see if phone number field has text
+                if (sPhone.matches("")) //tests to see if phone number field has text
                 {
-                    Toast.makeText(getApplicationContext(), "Phone Number not entered!",
-                            Toast.LENGTH_LONG).show();
+                    empError.setText("Phone Number not entered!");
+
                     return;
                 }
 
                 if( isPhoneValid(sPhone) == false)
                 {
-                    Toast.makeText(getApplicationContext(), "Phone Number not valid!",
-                            Toast.LENGTH_LONG).show();
+                    empError.setText("Phone Number not valid!");
+
+
                     return;
-                }*/
+                }
                 if (sEmail.matches("")) //tests to see if email address field has text
                 {
-                    Toast.makeText(getApplicationContext(), "Email Address not entered!",
-                            Toast.LENGTH_LONG).show();
+                    empError.setText("Email Address not entered!");
+
                     return;
                 }
                 if(isEmailValid(sEmail) == false){
-                    Toast.makeText(getApplicationContext(), "Email Address not valid!",
-                            Toast.LENGTH_LONG).show();
+                    empError.setText("Email Address not valid!");
+
                     return;
                 }
                 else {
@@ -156,14 +159,14 @@ public class RegistrationActivity extends AppCompatActivity {
 
 
                     } catch (Throwable t) {
-                        Toast.makeText(getApplicationContext(), "Invalid Response from Server, please try again.\n " + result,
-                                Toast.LENGTH_LONG).show();
+                        empError.setText("Invalid Response from Server, please try again.\n " + result);
+
 
                     }
                     String error = null;
                     if (obj.has("niceMessage")) {
                         try {
-                            error = obj.get("niceMessage").toString();
+                            error = obj.get("niceMessage").toString() +"\n\n"+ obj.get("debugMessage");
 
                         } catch (JSONException e) {
                             e.printStackTrace();
@@ -176,8 +179,7 @@ public class RegistrationActivity extends AppCompatActivity {
                     }
                     else
                     {
-                        Toast.makeText(getApplicationContext(), error,
-                                Toast.LENGTH_LONG).show();
+                        empError.setText(error);
                     }
 
                     return;

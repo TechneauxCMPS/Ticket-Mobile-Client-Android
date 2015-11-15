@@ -16,6 +16,7 @@ import android.widget.Toast;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.w3c.dom.Text;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -24,7 +25,7 @@ public class MainActivity extends AppCompatActivity {
     private static EditText password; //object to link to the password layout object
     private static TextView CSNumber; //object to link to the customer service number  layout object
     public static final String MY_PREFS_NAME = "MyPrefsFile"; //file to store prefs for the app.
-
+    public static TextView errorText;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,6 +37,7 @@ public class MainActivity extends AppCompatActivity {
         username = (EditText) findViewById(R.id.username);
         password = (EditText) findViewById(R.id.password);
         CSNumber = (TextView) findViewById(R.id.CSNumberText);
+        errorText=(TextView) findViewById(R.id.loginErrorText);
         setButtons(); //function to initialize the two buttons (submit and call)
         //********End Initialize the layout objects to a variable for manipulation********
 
@@ -94,21 +96,17 @@ public class MainActivity extends AppCompatActivity {
 
                 if (sUsername.matches("")) //tests to see if Username field has text
                 {
-                    Toast.makeText(getApplicationContext(), "Username not entered!",
-                            Toast.LENGTH_LONG).show();
+                    errorText.setText("Username not entered!");
+
                     return;
                 } else if (sPassword.matches("")) //tests to see if Password field has text
                 {
-                    Toast.makeText(getApplicationContext(), "Password not entered!",
-                            Toast.LENGTH_LONG).show();
+                    errorText.setText("Password not entered!");
+
                     return;
                 } else //username & password is accepted, save company name and switch to next screen,
                 {
                     SharedPreferences.Editor editor = getSharedPreferences(MY_PREFS_NAME, MODE_PRIVATE).edit();
-                    editor.putString("companyname", sUsername);
-                    editor.putInt("screen_state", 2);
-
-                    editor.commit();
                     JSONObject login = new JSONObject();
                     try {
                         login.put("companyID", sUsername);
@@ -133,14 +131,14 @@ public class MainActivity extends AppCompatActivity {
 
 
                     } catch (Throwable t) {
-                        Toast.makeText(getApplicationContext(), "Invalid Response from Server, please try again.\n " + result,
-                                Toast.LENGTH_LONG).show();
+                        errorText.setText("Invalid Response from Server, please try again." + result);
+
 
                     }
                     String error = null;
                     if (obj.has("niceMessage")) {
                         try {
-                            error = obj.get("niceMessage").toString();
+                            error = obj.get("niceMessage").toString() + "\n\n" + obj.get("debugMessage");
 
                         } catch (JSONException e) {
                             e.printStackTrace();
@@ -157,11 +155,15 @@ public class MainActivity extends AppCompatActivity {
                                 e.printStackTrace();
                             }
                         }
+
+                        editor.putString("companyname", sUsername);
+                        editor.putInt("screen_state", 2);
+
+                        editor.commit();
                         Intent myIntent = new Intent(v.getContext(), RegistrationActivity.class);
                         startActivityForResult(myIntent, 0);
                     } else {
-                        Toast.makeText(getApplicationContext(), error,
-                                Toast.LENGTH_LONG).show();
+                        errorText.setText(error);
                     }
 
 

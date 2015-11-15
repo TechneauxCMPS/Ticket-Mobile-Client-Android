@@ -57,7 +57,7 @@ public class TicketActivity  extends AppCompatActivity {
 
     private static EditText Location; //object to link to the location layout object
     private static EditText Description; //object to link to the description layout object
-
+    private static TextView ErrorTicket;
 
     private static Button SubmitTicketBTN;
     private static Button CameraBTN;
@@ -81,6 +81,7 @@ public class TicketActivity  extends AppCompatActivity {
         Location = (EditText) findViewById(R.id.locationsite);
         Description = (EditText) findViewById(R.id.ticket_description);
         imageView = (ImageView)this.findViewById(R.id.imageView);
+        ErrorTicket = (TextView) this.findViewById(R.id.ticketError);
         setButtons();
 
         SharedPreferences prefs = getSharedPreferences(MY_PREFS_NAME, MODE_PRIVATE);
@@ -144,13 +145,13 @@ public class TicketActivity  extends AppCompatActivity {
 
                 if (sLocation.matches("")) //tests to see if Username field has text
                 {
-                    Toast.makeText(getApplicationContext(), "Location Site not entered!",
-                            Toast.LENGTH_LONG).show();
+                    ErrorTicket.setText("Location Site not Entered!");
+
                     return;
                 } else if (sDescription.matches("")) //tests to see if Password field has text
                 {
-                    Toast.makeText(getApplicationContext(), "Description not entered!",
-                            Toast.LENGTH_LONG).show();
+                    ErrorTicket.setText("Description not Entered!");
+
                     return;
                 } else //username & password is accepted, save company name and switch to next screen,
                 {
@@ -176,7 +177,9 @@ public class TicketActivity  extends AppCompatActivity {
                     }
                     Log.d("API", "In Ticket: START " + photo_ticket +" END");
                     Log.d("API", "In Ticket Count: " + photo_ticket.length());
+
                     Thread thread = new Thread(new API_Communications("https://cmps.techneaux.com/submit-ticket", TicketInfo));
+                    //Thread thread = new Thread(new API_Communications("http://httpbin.org/post", TicketInfo));
                     thread.start();
                     while (API_Communications.result == null) {
                     }
@@ -190,8 +193,8 @@ public class TicketActivity  extends AppCompatActivity {
 
 
                     } catch (Throwable t) {
-                        Toast.makeText(getApplicationContext(), "Invalid Response from Server, please try again.\n " + result,
-                                Toast.LENGTH_LONG).show();
+                        ErrorTicket.setText("Invalid Response from Server, please try again.\n " + result);
+
 
                     }
                     String error = null;
@@ -225,14 +228,16 @@ public class TicketActivity  extends AppCompatActivity {
                                         + PhotoStatus,
                                 Toast.LENGTH_LONG).show();
                         Description.setText("");
+                        photo_ticket="";
                         editor.putString("ticket_photo", null);
                         editor.commit();
+                        ErrorTicket.setText("");
                         imageView.setImageBitmap(null);
                     }
                     else{
 
-                            Toast.makeText(getApplicationContext(), error,
-                                    Toast.LENGTH_LONG).show();
+                        ErrorTicket.setText(error);
+
 
                     }
 
@@ -249,6 +254,7 @@ public class TicketActivity  extends AppCompatActivity {
 
             @Override
             public void onClick(View v) {
+
                 Intent cameraIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
                 startActivityForResult(cameraIntent, CAMERA_REQUEST);
             }
@@ -291,14 +297,15 @@ public class TicketActivity  extends AppCompatActivity {
             imageView.setImageBitmap(photo);
             ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
             photo.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream);
-            byte[] byteArray = byteArrayOutputStream .toByteArray();
+            byte[] byteArray = byteArrayOutputStream.toByteArray();
             String encoded = Base64.encodeToString(byteArray, Base64.DEFAULT);
-
+            Log.d("API", "Init Photo Size:" + encoded.length());
             SharedPreferences.Editor editor = getSharedPreferences(MY_PREFS_NAME, MODE_PRIVATE).edit();
             editor.putString("ticket_photo", encoded);
             editor.commit();
 
             photo_ticket=encoded;
+
            //ClipboardManager clipboard = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
            //ClipData clip = ClipData.newPlainText("lol", encoded);
            //clipboard.setPrimaryClip(clip);

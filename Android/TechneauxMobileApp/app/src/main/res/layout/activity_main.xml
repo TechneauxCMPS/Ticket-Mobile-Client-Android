@@ -43,12 +43,20 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:id="@+id/loginErrorText"
+        android:textColor="#ff0000"
+        android:layout_below="@+id/password"
+        android:layout_centerHorizontal="true" />
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:text="1-800-337-5313"
         android:id="@+id/CSNumberText"
+        android:layout_marginTop="34dp"
         android:layout_below="@+id/loginSubmit"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="41dp" />
+        android:layout_centerHorizontal="true" />
+
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -56,9 +64,11 @@
         android:text="Have any questions, do not know your Company Log in, contact Techneaux Customer Service with any issues you may have."
         android:id="@+id/helpText"
         android:textColor="@android:color/black"
-        android:layout_below="@+id/CSNumberText"
+        android:layout_below="@+id/loginSubmit"
         android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true" />
+        android:layout_alignParentStart="true"
+        android:layout_marginTop="62dp" />
+
 
 
 

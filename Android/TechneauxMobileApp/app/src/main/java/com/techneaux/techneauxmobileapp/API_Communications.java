@@ -1,8 +1,8 @@
 package com.techneaux.techneauxmobileapp;
 
+import android.text.ClipboardManager;
 import android.util.Log;
 
-import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpVersion;
 import org.apache.http.client.ClientProtocolException;
@@ -16,12 +16,13 @@ import org.apache.http.conn.ssl.SSLSocketFactory;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager;
+import org.apache.http.message.BasicHeader;
 import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.HttpParams;
 import org.apache.http.params.HttpProtocolParams;
+import org.apache.http.protocol.BasicHttpContext;
 import org.apache.http.protocol.HTTP;
-import org.apache.http.util.EntityUtils;
-import org.json.JSONArray;
+import org.apache.http.protocol.HttpContext;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
@@ -44,25 +45,25 @@ import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 
-/**
- * Created by CMD Drake on 11/10/2015.
- */
+
 public class API_Communications implements Runnable{
 
-    public static String url;
+    public static String urlSTR;
     public static JSONObject json;
     public static String result;
     public API_Communications(String setUrl, JSONObject setJson) {
-        url = setUrl;
+        urlSTR = setUrl;
         json = setJson;
         result = null;
     }
 
 
     public void run() {
-
-        postData();
+     postData();
     }
+
+
+
 
 
     public static DefaultHttpClient createSSLHTTP() throws UnrecoverableKeyException, NoSuchAlgorithmException, KeyStoreException, KeyManagementException {
@@ -94,7 +95,7 @@ public class API_Communications implements Runnable{
     public static void postData(){
         // Create a new HttpClient and Post Header
         HttpClient httpclient = new DefaultHttpClient();
-        HttpPost httppost = new HttpPost(url);
+        HttpPost httppost = new HttpPost(urlSTR);
 
         try {
             httpclient = createSSLHTTP();
@@ -111,20 +112,20 @@ public class API_Communications implements Runnable{
 
         try {
 
-            JSONArray postjson= new JSONArray();
-            postjson.put(json);
 
-            httppost.setEntity(new StringEntity(json.toString(), "UTF8"));
-            httppost.setHeader("Content-type", "application/json");
+            StringEntity se = new StringEntity(json.toString());
+            se.setContentType(new BasicHeader(HTTP.CONTENT_TYPE, "application/json"));
 
+            httppost.setEntity(se);
 
-
-            httppost.getParams().setParameter("jsonpost", postjson);
 
             // Execute HTTP Post Request
             Log.d("API","json: " + json);
-            Log.d("API","Count: "+json.toString().length() );
-            HttpResponse response = httpclient.execute(httppost);
+            Log.d("API", "Count: " + json.toString().length());
+            HttpContext localContext = new BasicHttpContext();
+            httpclient.getParams().setBooleanParameter("http.protocol.expect-continue", false);
+            HttpResponse response = httpclient.execute(httppost,localContext);
+
 
             // for JSON:
             if(response != null)
@@ -150,6 +151,7 @@ public class API_Communications implements Runnable{
                 }
                 result = sb.toString();
                 Log.d("API","Result: " + result);
+                Log.d("API",response.getStatusLine().toString());
 
 
             }
@@ -157,10 +159,10 @@ public class API_Communications implements Runnable{
 
 
         }catch (ClientProtocolException e) {
-            Log.d("API","ClientProtocolException");
+            e.printStackTrace();
             // TODO Auto-generated catch block
         } catch (IOException e) {
-            Log.d("API",e.getLocalizedMessage());
+           e.printStackTrace();
             // TODO Auto-generated catch block
         }
 
@@ -176,7 +178,9 @@ public class API_Communications implements Runnable{
  * Note: Please only use this for development testing (for self signed in certificate). Adding this to the
  * public application is a serious blunder.
  * @author Sandip Jadhav
+ *
  */
+
 class SimpleSSLSocketFactory extends org.apache.http.conn.ssl.SSLSocketFactory
 {
     private javax.net.ssl.SSLSocketFactory sslFactory = HttpsURLConnection.getDefaultSSLSocketFactory();
