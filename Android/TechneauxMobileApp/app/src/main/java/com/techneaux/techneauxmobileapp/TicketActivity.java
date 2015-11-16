@@ -320,7 +320,7 @@ public class TicketActivity  extends AppCompatActivity {
 
             photo_ticket=encoded;
 
-           //ClipboardManager clipboard = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
+           // ClipboardManager clipboard = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
            //ClipData clip = ClipData.newPlainText("lol", encoded);
            //clipboard.setPrimaryClip(clip);
 

@@ -1,5 +1,6 @@
 package com.techneaux.techneauxmobileapp;
 
+import android.content.Context;
 import android.text.ClipboardManager;
 import android.util.Log;
 
@@ -13,6 +14,7 @@ import org.apache.http.conn.scheme.PlainSocketFactory;
 import org.apache.http.conn.scheme.Scheme;
 import org.apache.http.conn.scheme.SchemeRegistry;
 import org.apache.http.conn.ssl.SSLSocketFactory;
+import org.apache.http.entity.ByteArrayEntity;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager;
@@ -25,11 +27,20 @@ import org.apache.http.protocol.HTTP;
 import org.apache.http.protocol.HttpContext;
 import org.json.JSONObject;
 
+import java.io.BufferedInputStream;
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.UnsupportedEncodingException;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.ProtocolException;
 import java.net.Socket;
+import java.net.URL;
 import java.net.UnknownHostException;
 import java.security.KeyManagementException;
 import java.security.KeyStore;
@@ -37,12 +48,18 @@ import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.security.UnrecoverableKeyException;
+import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
+import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 
+import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.KeyManager;
 import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLSession;
 import javax.net.ssl.TrustManager;
+import javax.net.ssl.TrustManagerFactory;
 import javax.net.ssl.X509TrustManager;
 
 
@@ -51,19 +68,19 @@ public class API_Communications implements Runnable{
     public static String urlSTR;
     public static JSONObject json;
     public static String result;
+
     public API_Communications(String setUrl, JSONObject setJson) {
         urlSTR = setUrl;
         json = setJson;
         result = null;
+
     }
 
 
     public void run() {
-     postData();
+
+        postData();
     }
-
-
-
 
 
     public static DefaultHttpClient createSSLHTTP() throws UnrecoverableKeyException, NoSuchAlgorithmException, KeyStoreException, KeyManagementException {
@@ -113,10 +130,11 @@ public class API_Communications implements Runnable{
         try {
 
 
-            StringEntity se = new StringEntity(json.toString());
-            se.setContentType(new BasicHeader(HTTP.CONTENT_TYPE, "application/json"));
-
-            httppost.setEntity(se);
+           // StringEntity se = new StringEntity(json.toString());
+           // se.setContentType(new BasicHeader(HTTP.CONTENT_TYPE, "application/json"));
+            httppost.setEntity(new ByteArrayEntity(
+                    json.toString().getBytes("UTF8")));
+            //httppost.setEntity(se);
 
 
             // Execute HTTP Post Request
