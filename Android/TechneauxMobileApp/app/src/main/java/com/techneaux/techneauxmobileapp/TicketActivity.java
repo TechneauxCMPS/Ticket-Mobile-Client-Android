@@ -312,7 +312,7 @@ public class TicketActivity  extends AppCompatActivity {
             ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
             photo.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream);
             byte[] byteArray = byteArrayOutputStream.toByteArray();
-            String encoded = Base64.encodeToString(byteArray, Base64.DEFAULT);
+            String encoded = Base64.encodeToString(byteArray, Base64.NO_WRAP);
             Log.d("API", "Init Photo Size:" + encoded.length());
             SharedPreferences.Editor editor = getSharedPreferences(MY_PREFS_NAME, MODE_PRIVATE).edit();
             editor.putString("ticket_photo", encoded);
