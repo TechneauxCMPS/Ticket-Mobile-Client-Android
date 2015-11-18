@@ -103,7 +103,8 @@
         android:src="@drawable/phone"
         android:layout_alignTop="@+id/CSNumberText"
         android:layout_alignLeft="@+id/password"
-        android:layout_alignStart="@+id/password" />
+        android:layout_alignStart="@+id/password"
+        android:paddingStart="10dp" />
 
 
 </RelativeLayout>
