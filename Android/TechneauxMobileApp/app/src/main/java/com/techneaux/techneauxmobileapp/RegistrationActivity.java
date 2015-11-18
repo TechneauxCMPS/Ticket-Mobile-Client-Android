@@ -33,6 +33,7 @@ public class RegistrationActivity extends AppCompatActivity {
     private static TextView empError;
     public static final String MY_PREFS_NAME = "MyPrefsFile"; //file to store prefs for the app.
     private ProgressBar spinner;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -46,7 +47,7 @@ public class RegistrationActivity extends AppCompatActivity {
         emailaddress = (EditText) findViewById(R.id.emailaddress);
         loggedInName = (TextView) findViewById(R.id.companynameLoggedIn);
         empError = (TextView) findViewById(R.id.employeeError);
-        spinner = (ProgressBar)findViewById(R.id.employeeProgressBar);
+        spinner = (ProgressBar) findViewById(R.id.employeeProgressBar);
         spinner.setVisibility(View.INVISIBLE);
         setButtons();
 
@@ -56,14 +57,13 @@ public class RegistrationActivity extends AppCompatActivity {
         phonenumber.setText(prefs.getString("emp_phonenumber", null)); // init phone number to what was stored
         emailaddress.setText(prefs.getString("emp_emailaddress", null)); // init email address to what was stored
 
-        String mystring=new String("Company Name: " + prefs.getString("companyname" , null));
+        String mystring = new String("Company Name: " + prefs.getString("companyname", null));
         SpannableString content = new SpannableString(mystring);
-        content.setSpan(new UnderlineSpan(), 14 , mystring.length(), 0);
+        content.setSpan(new UnderlineSpan(), 14, mystring.length(), 0);
         loggedInName.setText(content); // init companyname to what was stored
         final View v = findViewById(android.R.id.content);
 
-        if( (prefs.getInt("screen_state",0) == 3  ))
-        {
+        if ((prefs.getInt("screen_state", 0) == 3)) {
             Intent myIntent = new Intent(v.getContext(), TicketActivity.class);
             startActivityForResult(myIntent, 0);
         }
@@ -76,8 +76,7 @@ public class RegistrationActivity extends AppCompatActivity {
      * Parameters: None
      * Use: Only needs to be called once to set the onclick methods.
      */
-    private void setButtons()
-    {
+    private void setButtons() {
         // throws a toast saying information has been verfied when Verify button is clicked.
         verifyButton.setOnClickListener(new Button.OnClickListener() {
             public void onClick(View v) {
@@ -105,8 +104,7 @@ public class RegistrationActivity extends AppCompatActivity {
                     return;
                 }
 
-                if( isPhoneValid(sPhone) == false)
-                {
+                if (isPhoneValid(sPhone) == false) {
                     empError.setText("Phone Number not valid!");
 
 
@@ -118,23 +116,21 @@ public class RegistrationActivity extends AppCompatActivity {
 
                     return;
                 }
-                if(isEmailValid(sEmail) == false){
+                if (isEmailValid(sEmail) == false) {
                     empError.setText("Email Address not valid!");
 
                     return;
-                }
-                else {
+                } else {
                     SharedPreferences.Editor editor = getSharedPreferences(MY_PREFS_NAME, MODE_PRIVATE).edit();
 
                     SharedPreferences prefs = getSharedPreferences(MY_PREFS_NAME, MODE_PRIVATE);
                     JSONObject EmployeeInfo = new JSONObject();
                     try {
-                        EmployeeInfo.put("authKey", prefs.getString("authKey",null));
+                        EmployeeInfo.put("authKey", prefs.getString("authKey", null));
                         EmployeeInfo.put("firstName", sFirstName);
                         EmployeeInfo.put("lastName", sLastName);
                         EmployeeInfo.put("email", sEmail);
                         EmployeeInfo.put("phoneNumber", sPhone);
-
 
 
                     } catch (JSONException e) {
@@ -179,9 +175,7 @@ public class RegistrationActivity extends AppCompatActivity {
                         spinner.setVisibility(v.INVISIBLE);
                         Intent myIntent = new Intent(v.getContext(), TicketActivity.class);
                         startActivityForResult(myIntent, 0);
-                    }
-                    else
-                    {
+                    } else {
                         spinner.setVisibility(v.INVISIBLE);
                         empError.setText(error);
                     }
@@ -192,9 +186,11 @@ public class RegistrationActivity extends AppCompatActivity {
             }
         });
     }
+
     /**
      * method is used for checking valid phone number format.
      * Borrowed from http://buzycoder.blogspot.com/2013/06/android-check-if-phone-number-is-valid.html
+     *
      * @param phone number
      * @return boolean true for valid false for invalid
      */
@@ -202,17 +198,19 @@ public class RegistrationActivity extends AppCompatActivity {
         //validate phone numbers of format "1234567890"
         if (phoneNo.matches("\\d{10}")) return true;
             //validating phone number with -, . or spaces
-        else if(phoneNo.matches("\\d{3}[-\\.\\s]\\d{3}[-\\.\\s]\\d{4}")) return true;
+        else if (phoneNo.matches("\\d{3}[-\\.\\s]\\d{3}[-\\.\\s]\\d{4}")) return true;
             //validating phone number with extension length from 3 to 5
-        else if(phoneNo.matches("\\d{3}-\\d{3}-\\d{4}\\s(x|(ext))\\d{3,5}")) return true;
+        else if (phoneNo.matches("\\d{3}-\\d{3}-\\d{4}\\s(x|(ext))\\d{3,5}")) return true;
             //validating phone number where area code is in braces ()
-        else if(phoneNo.matches("\\(\\d{3}\\)-\\d{3}-\\d{4}")) return true;
+        else if (phoneNo.matches("\\(\\d{3}\\)-\\d{3}-\\d{4}")) return true;
             //return false if nothing matches the input
         else return false;
     }
+
     /**
      * method is used for checking valid email id format.
      * Borrowed from http://stackoverflow.com/questions/6119722/how-to-check-edittexts-text-is-email-address-or-not
+     *
      * @param email
      * @return boolean true for valid false for invalid
      */
@@ -229,6 +227,7 @@ public class RegistrationActivity extends AppCompatActivity {
         }
         return isValid;
     }
+
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (keyCode == KeyEvent.KEYCODE_BACK) {
@@ -237,25 +236,27 @@ public class RegistrationActivity extends AppCompatActivity {
         }
         return super.onKeyDown(keyCode, event);
     }
+
     @Override
     public void onBackPressed() {
         // Do Here what ever you want do on back press;
     }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main, menu);
         return true;
     }
+
     /**
      * Preconditions: None
      * Post Conditions: all data fields are wiped out
      * Parameters: None
      * Use: whenever wipe data button is used in app.
      */
-    public static void wipeData(SharedPreferences.Editor editor,SharedPreferences prefs )
-    {
-        if(!(prefs.getInt("screen_state",0) == 2  )) {
+    public static void wipeData(SharedPreferences.Editor editor, SharedPreferences prefs) {
+        if (!(prefs.getInt("screen_state", 0) == 2)) {
 
             firstname.setText(null); //sets field to empty
             lastname.setText(null); //sets field to empty
@@ -272,13 +273,12 @@ public class RegistrationActivity extends AppCompatActivity {
         editor.putInt("screen_state", 0);
         editor.putString("companyname", null); //Wipe out company name
         editor.putInt("screen_state", 0); //Wipe out company name
-        editor.putString("authKey",null);
+        editor.putString("authKey", null);
         editor.commit();
 
 
-
-
     }
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will
@@ -291,7 +291,7 @@ public class RegistrationActivity extends AppCompatActivity {
             SharedPreferences.Editor editor = getSharedPreferences(MY_PREFS_NAME, MODE_PRIVATE).edit();
             SharedPreferences prefs = getSharedPreferences(MY_PREFS_NAME, MODE_PRIVATE);
             MainActivity.wipeData(editor);
-            wipeData(editor,prefs);
+            wipeData(editor, prefs);
             final View v = findViewById(android.R.id.content);
             Intent myIntent = new Intent(v.getContext(), MainActivity.class);
             startActivityForResult(myIntent, 0);

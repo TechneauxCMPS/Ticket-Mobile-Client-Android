@@ -63,7 +63,7 @@ import javax.net.ssl.TrustManagerFactory;
 import javax.net.ssl.X509TrustManager;
 
 
-public class API_Communications implements Runnable{
+public class API_Communications implements Runnable {
 
     public static String urlSTR;
     public static JSONObject json;
@@ -109,7 +109,7 @@ public class API_Communications implements Runnable{
         return client;
     }
 
-    public static void postData(){
+    public static void postData() {
         // Create a new HttpClient and Post Header
         HttpClient httpclient = new DefaultHttpClient();
         HttpPost httppost = new HttpPost(urlSTR);
@@ -130,24 +130,23 @@ public class API_Communications implements Runnable{
         try {
 
 
-           // StringEntity se = new StringEntity(json.toString());
-           // se.setContentType(new BasicHeader(HTTP.CONTENT_TYPE, "application/json"));
+            // StringEntity se = new StringEntity(json.toString());
+            // se.setContentType(new BasicHeader(HTTP.CONTENT_TYPE, "application/json"));
             httppost.setEntity(new ByteArrayEntity(
                     json.toString().getBytes("UTF8")));
             //httppost.setEntity(se);
 
 
             // Execute HTTP Post Request
-            Log.d("API","json: " + json);
+            Log.d("API", "json: " + json);
             Log.d("API", "Count: " + json.toString().length());
             HttpContext localContext = new BasicHttpContext();
             httpclient.getParams().setBooleanParameter("http.protocol.expect-continue", false);
-            HttpResponse response = httpclient.execute(httppost,localContext);
+            HttpResponse response = httpclient.execute(httppost, localContext);
 
 
             // for JSON:
-            if(response != null)
-            {
+            if (response != null) {
                 InputStream is = response.getEntity().getContent();
 
                 BufferedReader reader = new BufferedReader(new InputStreamReader(is));
@@ -168,25 +167,23 @@ public class API_Communications implements Runnable{
                     }
                 }
                 result = sb.toString();
-                Log.d("API","Result: " + result);
-                Log.d("API",response.getStatusLine().toString());
+                Log.d("API", "Result: " + result);
+                Log.d("API", response.getStatusLine().toString());
 
 
             }
 
 
-
-        }catch (ClientProtocolException e) {
+        } catch (ClientProtocolException e) {
             e.printStackTrace();
             // TODO Auto-generated catch block
         } catch (IOException e) {
-           e.printStackTrace();
+            e.printStackTrace();
             // TODO Auto-generated catch block
         }
 
 
     }
-
 
 
 }
@@ -195,28 +192,25 @@ public class API_Communications implements Runnable{
 /**
  * Note: Please only use this for development testing (for self signed in certificate). Adding this to the
  * public application is a serious blunder.
- * @author Sandip Jadhav
  *
+ * @author Sandip Jadhav
  */
 
-class SimpleSSLSocketFactory extends org.apache.http.conn.ssl.SSLSocketFactory
-{
+class SimpleSSLSocketFactory extends org.apache.http.conn.ssl.SSLSocketFactory {
     private javax.net.ssl.SSLSocketFactory sslFactory = HttpsURLConnection.getDefaultSSLSocketFactory();
 
-    public SimpleSSLSocketFactory (KeyStore truststore)
-            throws NoSuchAlgorithmException, KeyManagementException, KeyStoreException, UnrecoverableKeyException
-    {
+    public SimpleSSLSocketFactory(KeyStore truststore)
+            throws NoSuchAlgorithmException, KeyManagementException, KeyStoreException, UnrecoverableKeyException {
         super(null);
 
-        try
-        {
-            SSLContext context = SSLContext.getInstance ("TLS");
+        try {
+            SSLContext context = SSLContext.getInstance("TLS");
 
             // Create a trust manager that does not validate certificate chains and simply
             // accept all type of certificates
-            TrustManager[] trustAllCerts = new TrustManager[] { new X509TrustManager() {
+            TrustManager[] trustAllCerts = new TrustManager[]{new X509TrustManager() {
                 public java.security.cert.X509Certificate[] getAcceptedIssuers() {
-                    return new java.security.cert.X509Certificate[] {};
+                    return new java.security.cert.X509Certificate[]{};
                 }
 
                 public void checkClientTrusted(X509Certificate[] chain, String authType)
@@ -229,19 +223,16 @@ class SimpleSSLSocketFactory extends org.apache.http.conn.ssl.SSLSocketFactory
             }};
 
             // Initialize the socket factory
-            context.init (null, trustAllCerts, new SecureRandom());
-            sslFactory = context.getSocketFactory ();
-        }
-        catch (Exception e)
-        {
+            context.init(null, trustAllCerts, new SecureRandom());
+            sslFactory = context.getSocketFactory();
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
     @Override
     public Socket createSocket(Socket socket, String host, int port, boolean autoClose)
-            throws IOException, UnknownHostException
-    {
+            throws IOException, UnknownHostException {
         return sslFactory.createSocket(socket, host, port, autoClose);
     }
 

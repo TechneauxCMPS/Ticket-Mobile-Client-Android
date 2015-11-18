@@ -32,7 +32,7 @@ import java.io.ByteArrayOutputStream;
 /**
  * Created by CMD Drake on 10/27/2015.
  */
-public class TicketActivity  extends AppCompatActivity {
+public class TicketActivity extends AppCompatActivity {
 
     public static final String MY_PREFS_NAME = "MyPrefsFile"; //file to store prefs for the app.
 
@@ -55,6 +55,7 @@ public class TicketActivity  extends AppCompatActivity {
 
     private static Bitmap photo;
     private String photo_ticket;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -67,10 +68,10 @@ public class TicketActivity  extends AppCompatActivity {
         CameraBTN = (Button) this.findViewById(R.id.cameraBTN);
         Location = (EditText) findViewById(R.id.locationsite);
         Description = (EditText) findViewById(R.id.ticket_description);
-        imageView = (ImageView)this.findViewById(R.id.imageView);
+        imageView = (ImageView) this.findViewById(R.id.imageView);
         ErrorTicket = (TextView) this.findViewById(R.id.ticketError);
         clearPhoto = (Button) this.findViewById(R.id.clearPhoto);
-        spinner = (ProgressBar)findViewById(R.id.employeeProgressBar);
+        spinner = (ProgressBar) findViewById(R.id.employeeProgressBar);
         spinner.setVisibility(View.INVISIBLE);
         setButtons();
 
@@ -111,7 +112,7 @@ public class TicketActivity  extends AppCompatActivity {
         photo_ticket = "";
 
         if (base != null) {
-            photo_ticket=base;
+            photo_ticket = base;
             byte[] imageAsBytes = Base64.decode(base.getBytes(), Base64.DEFAULT);
             photo = BitmapFactory.decodeByteArray(imageAsBytes, 0, imageAsBytes.length);
             imageView.setImageBitmap(
@@ -125,24 +126,27 @@ public class TicketActivity  extends AppCompatActivity {
      * Parameters: None
      * Use: Only needs to be called once to set the onclick methods.
      */
-    private void setButtons()
-    {
+    private void setButtons() {
 
         // throws a toast saying information has been verfied when Verify button is clicked.
         SubmitTicketBTN.setOnClickListener(new Button.OnClickListener() {
             public void onClick(View v) {
+                SubmitTicketBTN.setEnabled(false);
+                SubmitTicketBTN.setText("Submitting...");
                 String sDescription = Description.getText().toString(); //get text from username layout object
                 String sLocation = Location.getText().toString(); //get text from password layout object
 
                 if (sLocation.matches("")) //tests to see if Username field has text
                 {
                     ErrorTicket.setText("Location Site not Entered!");
-
+                    SubmitTicketBTN.setEnabled(true);
+                    SubmitTicketBTN.setText("Submit Ticket");
                     return;
                 } else if (sDescription.matches("")) //tests to see if Password field has text
                 {
                     ErrorTicket.setText("Description not Entered!");
-
+                    SubmitTicketBTN.setEnabled(true);
+                    SubmitTicketBTN.setText("Submit Ticket");
                     return;
                 } else //username & password is accepted, save company name and switch to next screen,
                 {
@@ -155,85 +159,25 @@ public class TicketActivity  extends AppCompatActivity {
                     SharedPreferences prefs = getSharedPreferences(MY_PREFS_NAME, MODE_PRIVATE);
                     JSONObject TicketInfo = new JSONObject();
                     try {
-                        TicketInfo.put("authKey", prefs.getString("authKey",null));
+                        TicketInfo.put("authKey", prefs.getString("authKey", null));
                         TicketInfo.put("location", sLocation);
                         TicketInfo.put("description", sDescription);
                         TicketInfo.put("photo", photo_ticket);
 
 
-
                     } catch (JSONException e) {
                         // TODO Auto-generated catch block
+                        SubmitTicketBTN.setEnabled(true);
+                        SubmitTicketBTN.setText("Submit Ticket");
                         e.printStackTrace();
                     }
-                    Log.d("API", "In Ticket: START " + photo_ticket +" END");
+                    Log.d("API", "In Ticket: START " + photo_ticket + " END");
                     Log.d("API", "In Ticket Count: " + photo_ticket.length());
                     spinner.setVisibility(v.VISIBLE);
                     Thread thread = new Thread(new API_Communications("https://cmps.techneaux.com/submit-ticket", TicketInfo));
                     //Thread thread = new Thread(new API_Communications("http://httpbin.org/post", TicketInfo));
                     thread.start();
-                    while (API_Communications.result == null) {
-                    }
-
-                    String result = API_Communications.result;
-
-                    JSONObject obj = null;
-                    try {
-
-                        obj = new JSONObject(result);
-
-
-                    } catch (Throwable t) {
-                        ErrorTicket.setText("Invalid Response from Server, please try again.\n " + result);
-
-
-                    }
-                    String error = null;
-                    if (obj.has("niceMessage")) {
-                        try {
-                            error = obj.get("niceMessage").toString();
-
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                    String PhotoStatus = "";
-                    if (error == null) {
-
-                        if(prefs.getString("ticket_photo", null) == null)
-                        {
-                            PhotoStatus = "No Photo";
-                        }
-                        else
-                        {
-                            PhotoStatus = "Photo Attached";
-                        }
-
-
-                        Description.setText("");
-                        photo_ticket="";
-                        editor.putString("ticket_photo", null);
-                        editor.commit();
-                        ErrorTicket.setText("");
-                        imageView.setImageBitmap(null);
-                        spinner.setVisibility(v.INVISIBLE);
-                        Toast.makeText(getApplicationContext(), "Ticket Sent Successfully!\n\n"
-                                        + companyname.getText().toString() + "\nLocation: "
-                                        + Location.getText().toString() + "\n" +
-                                        employeename.getText().toString() + "\n"
-                                        + phonenumber.getText().toString() + "\n"
-                                        + emailaddress.getText().toString() + "\nDescription: "
-                                        + Description.getText().toString() + "\nPhoto: "
-                                        + PhotoStatus,
-                                Toast.LENGTH_LONG).show();
-                    }
-                    else{
-                        spinner.setVisibility(v.INVISIBLE);
-                        ErrorTicket.setText(error);
-
-
-                    }
-
+                    startTestThread();
                     return;
                 }
 
@@ -247,7 +191,7 @@ public class TicketActivity  extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 SharedPreferences.Editor editor = getSharedPreferences(MY_PREFS_NAME, MODE_PRIVATE).edit();
-                photo_ticket="";
+                photo_ticket = "";
                 editor.putString("ticket_photo", null);
                 editor.commit();
 
@@ -272,12 +216,124 @@ public class TicketActivity  extends AppCompatActivity {
         });
 
 
-
-
-
-
-
     }
+
+
+    protected void startTestThread() {
+        Thread t = new Thread() {
+            public void run() {
+                Log.d("API", "In thread");
+                SharedPreferences prefs = getSharedPreferences(MY_PREFS_NAME, MODE_PRIVATE);
+                SharedPreferences.Editor editor = getSharedPreferences(MY_PREFS_NAME, MODE_PRIVATE).edit();
+                while (API_Communications.result == null) {
+                }
+
+                final String result = API_Communications.result;
+
+                JSONObject obj = null;
+                try {
+
+                    obj = new JSONObject(result);
+
+
+                } catch (Throwable t) {
+                    runOnUiThread(new Runnable() {
+
+                        @Override
+                        public void run() {
+                            SubmitTicketBTN.setEnabled(true);
+                            ErrorTicket.setText("Invalid Response from Server, please try again.\n " + result);
+                            SubmitTicketBTN.setText("Submit Ticket");
+
+                        }
+                    });
+
+
+                }
+                String error = null;
+                if (obj.has("niceMessage")) {
+                    try {
+                        error = obj.get("niceMessage").toString();
+
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                        runOnUiThread(new Runnable() {
+
+                            @Override
+                            public void run() {
+                                SubmitTicketBTN.setEnabled(true);
+                                SubmitTicketBTN.setText("Submit Ticket");
+
+                            }
+                        });
+
+                    }
+                }
+                String PhotoStatus = "";
+                if (error == null) {
+
+                    if (prefs.getString("ticket_photo", null) == null) {
+                        PhotoStatus = "No Photo";
+                    } else {
+                        PhotoStatus = "Photo Attached";
+                    }
+
+                    runOnUiThread(new Runnable() {
+
+                        @Override
+                        public void run() {
+                            Description.setText("");
+                        }
+                    });
+
+
+                    photo_ticket = "";
+                    editor.putString("ticket_photo", null);
+                    editor.commit();
+                    final String finalPhotoStatus = PhotoStatus;
+                    runOnUiThread(new Runnable() {
+
+                        @Override
+                        public void run() {
+                            ErrorTicket.setText("");
+                            imageView.setImageBitmap(null);
+                            spinner.setVisibility(View.INVISIBLE);
+                            SubmitTicketBTN.setEnabled(true);
+                            SubmitTicketBTN.setText("Submit Ticket");
+                            Toast.makeText(getApplicationContext(), "Ticket Sent Successfully!\n\n"
+                                            + companyname.getText().toString() + "\nLocation: "
+                                            + Location.getText().toString() + "\n" +
+                                            employeename.getText().toString() + "\n"
+                                            + phonenumber.getText().toString() + "\n"
+                                            + emailaddress.getText().toString() + "\nDescription: "
+                                            + Description.getText().toString() + "\nPhoto: "
+                                            + finalPhotoStatus,
+                                    Toast.LENGTH_LONG).show();
+
+                        }
+                    });
+
+                } else {
+                    final String finalError = error;
+                    runOnUiThread(new Runnable() {
+
+                        @Override
+                        public void run() {
+                            spinner.setVisibility(View.INVISIBLE);
+                            ErrorTicket.setText(finalError);
+                            SubmitTicketBTN.setText("Submit Ticket");
+                            SubmitTicketBTN.setEnabled(true);
+                        }
+                    });
+
+
+                }
+            }
+        };
+
+        t.start();
+    }
+
     private void loadPhoto(ImageView imageView) {
 
         ImageView tempImageView = imageView;
@@ -288,12 +344,13 @@ public class TicketActivity  extends AppCompatActivity {
 
         View layout = inflater.inflate(R.layout.photo_preview, null);
         ImageView image = (ImageView) layout.findViewById(R.id.imageView2);
-        image.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,1500 ));
+        image.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 1500));
         image.setImageDrawable(tempImageView.getDrawable());
         imageDialog.setView(layout);
         imageDialog.create();
         imageDialog.show();
     }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == CAMERA_REQUEST && resultCode == RESULT_OK) {
@@ -308,14 +365,15 @@ public class TicketActivity  extends AppCompatActivity {
             editor.putString("ticket_photo", encoded);
             editor.commit();
 
-            photo_ticket=encoded;
+            photo_ticket = encoded;
 
-           // ClipboardManager clipboard = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
-           //ClipData clip = ClipData.newPlainText("lol", encoded);
-           //clipboard.setPrimaryClip(clip);
+            // ClipboardManager clipboard = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
+            //ClipData clip = ClipData.newPlainText("lol", encoded);
+            //clipboard.setPrimaryClip(clip);
 
         }
     }
+
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (keyCode == KeyEvent.KEYCODE_BACK) {
@@ -324,16 +382,19 @@ public class TicketActivity  extends AppCompatActivity {
         }
         return super.onKeyDown(keyCode, event);
     }
+
     @Override
     public void onBackPressed() {
         // Do Here what ever you want do on back press;
     }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main, menu);
         return true;
     }
+
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
@@ -347,20 +408,18 @@ public class TicketActivity  extends AppCompatActivity {
             try {
                 MainActivity.wipeData(editor);
                 RegistrationActivity.wipeData(editor, prefs);
-            }
-            catch(Exception e)
-            {
+            } catch (Exception e) {
                 e.printStackTrace();
             }
-            wipeData(editor,prefs);
+            wipeData(editor, prefs);
             final View v = findViewById(android.R.id.content);
             Intent myIntent = new Intent(v.getContext(), MainActivity.class);
             startActivityForResult(myIntent, 0);
             return true;
         }
-        if(id == R.id.EmployeeCredentials)
-        {
-            SharedPreferences.Editor editor = getSharedPreferences(MY_PREFS_NAME, MODE_PRIVATE).edit();;
+        if (id == R.id.EmployeeCredentials) {
+            SharedPreferences.Editor editor = getSharedPreferences(MY_PREFS_NAME, MODE_PRIVATE).edit();
+            ;
             editor.putInt("screen_state", 2);
             editor.commit();
             final View v = findViewById(android.R.id.content);
@@ -371,8 +430,7 @@ public class TicketActivity  extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    public static void wipeData(SharedPreferences.Editor editor,SharedPreferences prefs)
-    {
+    public static void wipeData(SharedPreferences.Editor editor, SharedPreferences prefs) {
         editor.putString("ticket_photo", null);
         editor.putString("ticket_location", null);
         editor.putInt("screen_state", 0);
@@ -386,7 +444,7 @@ public class TicketActivity  extends AppCompatActivity {
         editor.putString("authKey", null);
         editor.commit();
 
-        if(!(prefs.getInt("screen_state",0) == 3  )) {
+        if (!(prefs.getInt("screen_state", 0) == 3)) {
 
             Location.setText(null);
             Description.setText(null);
