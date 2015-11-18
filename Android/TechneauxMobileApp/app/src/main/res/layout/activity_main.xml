@@ -43,19 +43,19 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:visibility="invisible"
-        android:layout_below="@+id/loginErrorText"
-        android:layout_centerHorizontal="true" />
+        android:layout_alignTop="@+id/loginErrorText"
+        android:layout_toRightOf="@+id/CSNumberText"
+        android:layout_toEndOf="@+id/CSNumberText" />
     // Submit button
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Submit"
         android:id="@+id/loginSubmit"
-        android:layout_below="@+id/password"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="31dp"
         android:textColor="@android:color/white"
-        android:background="#F95E07"/>
+        android:background="#F95E07"
+        android:layout_below="@+id/loginErrorText"
+        android:layout_centerHorizontal="true" />
 
     // Login Error Message
     <TextView

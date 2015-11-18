@@ -96,18 +96,22 @@ public class MainActivity extends AppCompatActivity {
         submitLoginInfo.setOnClickListener(new Button.OnClickListener() {
 
             public void onClick(View v) {
+                submitLoginInfo.setText("Logging In...");
+                submitLoginInfo.setEnabled(false);
                 String sUsername = username.getText().toString(); //get text from username layout object
                 String sPassword = password.getText().toString(); //get text from password layout object
 
                 if (sUsername.matches("")) //tests to see if Username field has text
                 {
                     errorText.setText("Username not entered!");
-
+                    submitLoginInfo.setText("Submit");
+                    submitLoginInfo.setEnabled(true);
                     return;
                 } else if (sPassword.matches("")) //tests to see if Password field has text
                 {
                     errorText.setText("Password not entered!");
-
+                    submitLoginInfo.setText("Submit");
+                    submitLoginInfo.setEnabled(true);
                     return;
                 } else //username & password is accepted, save company name and switch to next screen,
                 {
@@ -126,57 +130,7 @@ public class MainActivity extends AppCompatActivity {
 
                     Thread thread = new Thread(new API_Communications("https://cmps.techneaux.com/login", login));
                     thread.start();
-                    while (API_Communications.result == null) {
-                    }
-
-                    String result = API_Communications.result;
-                    JSONObject obj = null;
-                    try {
-
-                        obj = new JSONObject(result);
-
-
-                    } catch (Throwable t) {
-                        errorText.setText("Invalid Response from Server, please try again." + result);
-
-
-                    }
-                    String error = null;
-                    if (obj.has("niceMessage")) {
-                        try {
-                            error = obj.get("niceMessage").toString() + "\n\n" + obj.get("debugMessage");
-
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                    if (obj.has("authKey")) {
-                        if (error == null) {
-                            try {
-                                String authKey = obj.get("authKey").toString();
-                                editor.putString("authKey", authKey);
-
-                                editor.commit();
-                            } catch (JSONException e) {
-                                e.printStackTrace();
-                            }
-                        }
-
-                        editor.putString("companyname", sUsername);
-                        editor.putInt("screen_state", 2);
-
-                        editor.commit();
-                        spinner.setVisibility(v.INVISIBLE);
-
-                        Intent myIntent = new Intent(v.getContext(), RegistrationActivity.class);
-                        startActivityForResult(myIntent, 0);
-                    } else {
-                        spinner.setVisibility(v.INVISIBLE);
-
-                        errorText.setText(error);
-                    }
-
-
+                    runThread(v, sUsername);
                     return;
                 }
 
@@ -185,6 +139,113 @@ public class MainActivity extends AppCompatActivity {
         });
         //********End Submit Login Info ********
     }
+    private void runThread(final View v, final String sUsername) {
+
+        new Thread() {
+            public void run() {
+                SharedPreferences.Editor editor = getSharedPreferences(MY_PREFS_NAME, MODE_PRIVATE).edit();
+
+
+                while (API_Communications.result == null) {
+                }
+
+                final String result = API_Communications.result;
+                JSONObject obj = null;
+                try {
+
+                    obj = new JSONObject(result);
+
+
+                } catch (Throwable t) {
+                    runOnUiThread(new Runnable() {
+
+                        @Override
+                        public void run() {
+                            errorText.setText("Invalid Response from Server, please try again." + result);
+                            submitLoginInfo.setText("Submit");
+                            submitLoginInfo.setEnabled(true);
+                        }
+                    });
+
+
+
+                }
+                String error = null;
+                if (obj.has("niceMessage")) {
+                    try {
+                        error = obj.get("niceMessage").toString();
+
+                    } catch (JSONException e) {
+                        runOnUiThread(new Runnable() {
+
+                            @Override
+                            public void run() {
+                                spinner.setVisibility(v.INVISIBLE);
+                                submitLoginInfo.setText("Submit");
+                                submitLoginInfo.setEnabled(true);
+
+                            }
+                        });
+                        e.printStackTrace();
+                    }
+                }
+                if (obj.has("authKey")) {
+                    if (error == null) {
+                        try {
+                            String authKey = obj.get("authKey").toString();
+                            editor.putString("authKey", authKey);
+
+                            editor.commit();
+                        } catch (JSONException e) {
+                            runOnUiThread(new Runnable() {
+
+                                @Override
+                                public void run() {
+                                    spinner.setVisibility(v.INVISIBLE);
+                                    submitLoginInfo.setText("Submit");
+                                    submitLoginInfo.setEnabled(true);
+
+                                }
+                            });
+                            e.printStackTrace();
+                        }
+                    }
+
+                    editor.putString("companyname", sUsername);
+                    editor.putInt("screen_state", 2);
+
+                    editor.commit();
+                    runOnUiThread(new Runnable() {
+
+                        @Override
+                        public void run() {
+                            spinner.setVisibility(v.INVISIBLE);
+                            submitLoginInfo.setText("Submit");
+                            submitLoginInfo.setEnabled(true);
+                            Intent myIntent = new Intent(v.getContext(), RegistrationActivity.class);
+                            startActivityForResult(myIntent, 0);
+                        }
+                    });
+
+                } else {
+                    final String finalError = error;
+                    runOnUiThread(new Runnable() {
+
+                        @Override
+                        public void run() {
+                            spinner.setVisibility(v.INVISIBLE);
+                            submitLoginInfo.setText("Submit");
+                            submitLoginInfo.setEnabled(true);
+                            errorText.setText(finalError);
+                        }
+                    });
+
+                }
+
+            }
+        }.start();
+    }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
