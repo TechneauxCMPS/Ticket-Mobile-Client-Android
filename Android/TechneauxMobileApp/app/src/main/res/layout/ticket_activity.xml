@@ -121,7 +121,16 @@
         android:layout_alignLeft="@+id/ticket_description"
         android:layout_alignStart="@+id/ticket_description" />
 
-
+    //Progress Bar
+    <ProgressBar
+        android:id="@+id/employeeProgressBar"
+        style="?android:attr/progressBarStyleLarge"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="invisible"
+        android:layout_below="@+id/ticketError"
+        android:layout_alignRight="@+id/ticket_emailaddress"
+        android:layout_alignEnd="@+id/ticket_emailaddress" />
     // Clear Photo
     <Button
         android:layout_width="wrap_content"

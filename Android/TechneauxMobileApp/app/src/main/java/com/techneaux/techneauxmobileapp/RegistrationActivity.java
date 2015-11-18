@@ -7,17 +7,17 @@ import android.support.v7.app.AppCompatActivity;
 import android.text.SpannableString;
 import android.text.style.UnderlineSpan;
 import android.view.KeyEvent;
-import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.w3c.dom.Text;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -32,7 +32,7 @@ public class RegistrationActivity extends AppCompatActivity {
     private static TextView loggedInName; //object to link to the companyName layout object
     private static TextView empError;
     public static final String MY_PREFS_NAME = "MyPrefsFile"; //file to store prefs for the app.
-
+    private ProgressBar spinner;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -46,6 +46,8 @@ public class RegistrationActivity extends AppCompatActivity {
         emailaddress = (EditText) findViewById(R.id.emailaddress);
         loggedInName = (TextView) findViewById(R.id.companynameLoggedIn);
         empError = (TextView) findViewById(R.id.employeeError);
+        spinner = (ProgressBar)findViewById(R.id.employeeProgressBar);
+        spinner.setVisibility(View.INVISIBLE);
         setButtons();
 
         SharedPreferences prefs = getSharedPreferences(MY_PREFS_NAME, MODE_PRIVATE);
@@ -123,12 +125,7 @@ public class RegistrationActivity extends AppCompatActivity {
                 }
                 else {
                     SharedPreferences.Editor editor = getSharedPreferences(MY_PREFS_NAME, MODE_PRIVATE).edit();
-                    editor.putString("emp_firstname", sFirstName);
-                    editor.putString("emp_lastname", sLastName);
-                    editor.putString("emp_phonenumber", sPhone);
-                    editor.putString("emp_emailaddress", sEmail);
-                    editor.putInt("screen_state", 3);
-                    editor.commit();
+
                     SharedPreferences prefs = getSharedPreferences(MY_PREFS_NAME, MODE_PRIVATE);
                     JSONObject EmployeeInfo = new JSONObject();
                     try {
@@ -144,7 +141,7 @@ public class RegistrationActivity extends AppCompatActivity {
                         // TODO Auto-generated catch block
                         e.printStackTrace();
                     }
-
+                    spinner.setVisibility(v.VISIBLE);
                     Thread thread = new Thread(new API_Communications("https://cmps.techneaux.com/update-employee", EmployeeInfo));
                     thread.start();
                     while (API_Communications.result == null) {
@@ -166,19 +163,26 @@ public class RegistrationActivity extends AppCompatActivity {
                     String error = null;
                     if (obj.has("niceMessage")) {
                         try {
-                            error = obj.get("niceMessage").toString() +"\n\n"+ obj.get("debugMessage");
+                            error = obj.get("niceMessage").toString();
 
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
                     }
                     if (error == null) {
-
+                        editor.putString("emp_firstname", sFirstName);
+                        editor.putString("emp_lastname", sLastName);
+                        editor.putString("emp_phonenumber", sPhone);
+                        editor.putString("emp_emailaddress", sEmail);
+                        editor.putInt("screen_state", 3);
+                        editor.commit();
+                        spinner.setVisibility(v.INVISIBLE);
                         Intent myIntent = new Intent(v.getContext(), TicketActivity.class);
                         startActivityForResult(myIntent, 0);
                     }
                     else
                     {
+                        spinner.setVisibility(v.INVISIBLE);
                         empError.setText(error);
                     }
 

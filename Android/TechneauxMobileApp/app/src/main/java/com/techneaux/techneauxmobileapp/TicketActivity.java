@@ -1,22 +1,11 @@
 package com.techneaux.techneauxmobileapp;
 
 import android.app.AlertDialog;
-import android.app.Dialog;
-import android.content.ClipData;
-import android.content.ClipboardManager;
-import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.Paint;
-import android.graphics.Rect;
-import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
-import android.provider.ContactsContract;
 import android.support.v7.app.AppCompatActivity;
 import android.text.SpannableString;
 import android.text.style.UnderlineSpan;
@@ -24,17 +13,14 @@ import android.util.Base64;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
-import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.ViewGroup;
-import android.view.Window;
+import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.RadioGroup;
-import android.widget.RelativeLayout;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -62,8 +48,8 @@ public class TicketActivity  extends AppCompatActivity {
 
     private static Button SubmitTicketBTN;
     private static Button CameraBTN;
-    boolean isImageFitToScreen;
 
+    private ProgressBar spinner;
     private static final int CAMERA_REQUEST = 1888;
     private static ImageView imageView;
 
@@ -84,6 +70,8 @@ public class TicketActivity  extends AppCompatActivity {
         imageView = (ImageView)this.findViewById(R.id.imageView);
         ErrorTicket = (TextView) this.findViewById(R.id.ticketError);
         clearPhoto = (Button) this.findViewById(R.id.clearPhoto);
+        spinner = (ProgressBar)findViewById(R.id.employeeProgressBar);
+        spinner.setVisibility(View.INVISIBLE);
         setButtons();
 
         SharedPreferences prefs = getSharedPreferences(MY_PREFS_NAME, MODE_PRIVATE);
@@ -180,7 +168,7 @@ public class TicketActivity  extends AppCompatActivity {
                     }
                     Log.d("API", "In Ticket: START " + photo_ticket +" END");
                     Log.d("API", "In Ticket Count: " + photo_ticket.length());
-
+                    spinner.setVisibility(v.VISIBLE);
                     Thread thread = new Thread(new API_Communications("https://cmps.techneaux.com/submit-ticket", TicketInfo));
                     //Thread thread = new Thread(new API_Communications("http://httpbin.org/post", TicketInfo));
                     thread.start();
@@ -221,6 +209,14 @@ public class TicketActivity  extends AppCompatActivity {
                             PhotoStatus = "Photo Attached";
                         }
 
+
+                        Description.setText("");
+                        photo_ticket="";
+                        editor.putString("ticket_photo", null);
+                        editor.commit();
+                        ErrorTicket.setText("");
+                        imageView.setImageBitmap(null);
+                        spinner.setVisibility(v.INVISIBLE);
                         Toast.makeText(getApplicationContext(), "Ticket Sent Successfully!\n\n"
                                         + companyname.getText().toString() + "\nLocation: "
                                         + Location.getText().toString() + "\n" +
@@ -230,15 +226,9 @@ public class TicketActivity  extends AppCompatActivity {
                                         + Description.getText().toString() + "\nPhoto: "
                                         + PhotoStatus,
                                 Toast.LENGTH_LONG).show();
-                        Description.setText("");
-                        photo_ticket="";
-                        editor.putString("ticket_photo", null);
-                        editor.commit();
-                        ErrorTicket.setText("");
-                        imageView.setImageBitmap(null);
                     }
                     else{
-
+                        spinner.setVisibility(v.INVISIBLE);
                         ErrorTicket.setText(error);
 
 

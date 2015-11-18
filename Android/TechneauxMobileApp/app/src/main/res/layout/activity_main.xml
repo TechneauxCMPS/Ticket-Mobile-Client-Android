@@ -36,7 +36,15 @@
         android:textColor="#AAAAAA"
         android:maxLength="16"
         android:textColorHint="#707070"/>
-
+    //Progress Bar
+    <ProgressBar
+        android:id="@+id/loginProgressBar"
+        style="?android:attr/progressBarStyleLarge"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="invisible"
+        android:layout_below="@+id/loginErrorText"
+        android:layout_centerHorizontal="true" />
     // Submit button
     <Button
         android:layout_width="wrap_content"

@@ -11,6 +11,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -26,6 +27,7 @@ public class MainActivity extends AppCompatActivity {
     private static TextView CSNumber; //object to link to the customer service number  layout object
     public static final String MY_PREFS_NAME = "MyPrefsFile"; //file to store prefs for the app.
     public static TextView errorText;
+    private ProgressBar spinner;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,6 +40,9 @@ public class MainActivity extends AppCompatActivity {
         password = (EditText) findViewById(R.id.password);
         CSNumber = (TextView) findViewById(R.id.CSNumberText);
         errorText=(TextView) findViewById(R.id.loginErrorText);
+        spinner = (ProgressBar)findViewById(R.id.loginProgressBar);
+        spinner.setVisibility(View.INVISIBLE);
+
         setButtons(); //function to initialize the two buttons (submit and call)
         //********End Initialize the layout objects to a variable for manipulation********
 
@@ -117,6 +122,7 @@ public class MainActivity extends AppCompatActivity {
                         // TODO Auto-generated catch block
                         e.printStackTrace();
                     }
+                    spinner.setVisibility(v.VISIBLE);
 
                     Thread thread = new Thread(new API_Communications("https://cmps.techneaux.com/login", login));
                     thread.start();
@@ -160,9 +166,13 @@ public class MainActivity extends AppCompatActivity {
                         editor.putInt("screen_state", 2);
 
                         editor.commit();
+                        spinner.setVisibility(v.INVISIBLE);
+
                         Intent myIntent = new Intent(v.getContext(), RegistrationActivity.class);
                         startActivityForResult(myIntent, 0);
                     } else {
+                        spinner.setVisibility(v.INVISIBLE);
+
                         errorText.setText(error);
                     }
 

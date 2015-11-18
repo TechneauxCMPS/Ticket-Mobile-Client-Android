@@ -92,7 +92,16 @@
         android:textColor="@android:color/white"
         android:background="#F95E07"
         />
-
+    //Progress Bar
+    <ProgressBar
+        android:id="@+id/employeeProgressBar"
+        style="?android:attr/progressBarStyleLarge"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="invisible"
+        android:layout_marginTop="26dp"
+        android:layout_below="@+id/Phone"
+        android:layout_centerHorizontal="true" />
     // Error Message
     <TextView
         android:layout_width="wrap_content"
