@@ -80,6 +80,8 @@ public class RegistrationActivity extends AppCompatActivity {
         // throws a toast saying information has been verfied when Verify button is clicked.
         verifyButton.setOnClickListener(new Button.OnClickListener() {
             public void onClick(View v) {
+                verifyButton.setEnabled(false);
+                verifyButton.setText("Verifying...");
                 String sFirstName = firstname.getText().toString(); //get text from username layout object
                 String sLastName = lastname.getText().toString(); //get text from password layout object
                 String sPhone = phonenumber.getText().toString(); //get text from username layout object
@@ -88,37 +90,43 @@ public class RegistrationActivity extends AppCompatActivity {
                 if (sFirstName.matches("")) //tests to see if first name field has text
                 {
                     empError.setText("Employee First Name not entered!");
-
+                    verifyButton.setEnabled(true);
+                    verifyButton.setText("Verify");
                     return;
                 }
                 if (sLastName.matches("")) //tests to see if last name field has text
                 {
                     empError.setText("Employee Last Name not entered!");
-
+                    verifyButton.setEnabled(true);
+                    verifyButton.setText("Verify");
                     return;
                 }
                 if (sPhone.matches("")) //tests to see if phone number field has text
                 {
                     empError.setText("Phone Number not entered!");
-
+                    verifyButton.setEnabled(true);
+                    verifyButton.setText("Verify");
                     return;
                 }
 
                 if (isPhoneValid(sPhone) == false) {
                     empError.setText("Phone Number not valid!");
 
-
+                    verifyButton.setEnabled(true);
+                    verifyButton.setText("Verify");
                     return;
                 }
                 if (sEmail.matches("")) //tests to see if email address field has text
                 {
                     empError.setText("Email Address not entered!");
-
+                    verifyButton.setEnabled(true);
+                    verifyButton.setText("Verify");
                     return;
                 }
                 if (isEmailValid(sEmail) == false) {
                     empError.setText("Email Address not valid!");
-
+                    verifyButton.setEnabled(true);
+                    verifyButton.setText("Verify");
                     return;
                 } else {
                     SharedPreferences.Editor editor = getSharedPreferences(MY_PREFS_NAME, MODE_PRIVATE).edit();
@@ -171,7 +179,8 @@ public class RegistrationActivity extends AppCompatActivity {
 
                         @Override
                         public void run() {
-
+                            verifyButton.setEnabled(true);
+                            verifyButton.setText("Verify");
                             empError.setText("Invalid Response from Server, please try again.\n " + result);
                         }
                     });
@@ -198,6 +207,8 @@ public class RegistrationActivity extends AppCompatActivity {
 
                         @Override
                         public void run() {
+                            verifyButton.setEnabled(true);
+                            verifyButton.setText("Verify");
                             spinner.setVisibility(View.INVISIBLE);
                             Intent myIntent = new Intent(v.getContext(), TicketActivity.class);
                             startActivityForResult(myIntent, 0);
@@ -211,6 +222,8 @@ public class RegistrationActivity extends AppCompatActivity {
 
                         @Override
                         public void run() {
+                            verifyButton.setEnabled(true);
+                            verifyButton.setText("Verify");
                             spinner.setVisibility(View.INVISIBLE);
                             empError.setText(finalError);
                         }
