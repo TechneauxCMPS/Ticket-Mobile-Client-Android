@@ -140,53 +140,93 @@ public class RegistrationActivity extends AppCompatActivity {
                     spinner.setVisibility(v.VISIBLE);
                     Thread thread = new Thread(new API_Communications("https://cmps.techneaux.com/update-employee", EmployeeInfo));
                     thread.start();
-                    while (API_Communications.result == null) {
-                    }
-
-                    String result = API_Communications.result;
-
-                    JSONObject obj = null;
-                    try {
-
-                        obj = new JSONObject(result);
-
-
-                    } catch (Throwable t) {
-                        empError.setText("Invalid Response from Server, please try again.\n " + result);
-
-
-                    }
-                    String error = null;
-                    if (obj.has("niceMessage")) {
-                        try {
-                            error = obj.get("niceMessage").toString();
-
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                    if (error == null) {
-                        editor.putString("emp_firstname", sFirstName);
-                        editor.putString("emp_lastname", sLastName);
-                        editor.putString("emp_phonenumber", sPhone);
-                        editor.putString("emp_emailaddress", sEmail);
-                        editor.putInt("screen_state", 3);
-                        editor.commit();
-                        spinner.setVisibility(v.INVISIBLE);
-                        Intent myIntent = new Intent(v.getContext(), TicketActivity.class);
-                        startActivityForResult(myIntent, 0);
-                    } else {
-                        spinner.setVisibility(v.INVISIBLE);
-                        empError.setText(error);
-                    }
-
+                    runThread(sFirstName,sLastName,sEmail,sPhone, v );
                     return;
                 }
 
             }
         });
     }
+    private void runThread(final String sFirstName, final String sLastName, final String sEmail, final String sPhone, final View v ) {
 
+        new Thread() {
+            public void run() {
+                SharedPreferences.Editor editor = getSharedPreferences(MY_PREFS_NAME, MODE_PRIVATE).edit();
+
+                SharedPreferences prefs = getSharedPreferences(MY_PREFS_NAME, MODE_PRIVATE);
+
+                while (API_Communications.result == null) {
+                }
+
+                final String result = API_Communications.result;
+
+                JSONObject obj = null;
+                try {
+
+                    obj = new JSONObject(result);
+
+
+                } catch (Throwable t) {
+                    runOnUiThread(new Runnable() {
+
+                        @Override
+                        public void run() {
+
+                            empError.setText("Invalid Response from Server, please try again.\n " + result);
+                        }
+                    });
+
+
+                }
+                String error = null;
+                if (obj.has("niceMessage")) {
+                    try {
+                        error = obj.get("niceMessage").toString();
+
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+                if (error == null) {
+                    editor.putString("emp_firstname", sFirstName);
+                    editor.putString("emp_lastname", sLastName);
+                    editor.putString("emp_phonenumber", sPhone);
+                    editor.putString("emp_emailaddress", sEmail);
+                    editor.putInt("screen_state", 3);
+                    editor.commit();
+                    runOnUiThread(new Runnable() {
+
+                        @Override
+                        public void run() {
+                            spinner.setVisibility(View.INVISIBLE);
+                            Intent myIntent = new Intent(v.getContext(), TicketActivity.class);
+                            startActivityForResult(myIntent, 0);
+                        }
+                    });
+
+
+                } else {
+                    final String finalError = error;
+                    runOnUiThread(new Runnable() {
+
+                        @Override
+                        public void run() {
+                            spinner.setVisibility(View.INVISIBLE);
+                            empError.setText(finalError);
+                        }
+                    });
+
+                }
+
+
+
+
+
+
+                    }
+
+             }.start();
+    }
     /**
      * method is used for checking valid phone number format.
      * Borrowed from http://buzycoder.blogspot.com/2013/06/android-check-if-phone-number-is-valid.html
