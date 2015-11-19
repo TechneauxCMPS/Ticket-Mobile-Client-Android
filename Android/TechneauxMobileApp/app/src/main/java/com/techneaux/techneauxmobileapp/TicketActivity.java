@@ -133,20 +133,18 @@ public class TicketActivity extends AppCompatActivity {
             public void onClick(View v) {
                 SubmitTicketBTN.setEnabled(false);
                 SubmitTicketBTN.setText("Submitting...");
+                CameraBTN.setEnabled(false);
+                clearPhoto.setEnabled(false);
                 String sDescription = Description.getText().toString(); //get text from username layout object
                 String sLocation = Location.getText().toString(); //get text from password layout object
 
-                if (sLocation.matches("")) //tests to see if Username field has text
-                {
-                    ErrorTicket.setText("Location Site not Entered!");
-                    SubmitTicketBTN.setEnabled(true);
-                    SubmitTicketBTN.setText("Submit Ticket");
-                    return;
-                } else if (sDescription.matches("")) //tests to see if Password field has text
+                if (sDescription.matches("")) //tests to see if Password field has text
                 {
                     ErrorTicket.setText("Description not Entered!");
                     SubmitTicketBTN.setEnabled(true);
                     SubmitTicketBTN.setText("Submit Ticket");
+                    CameraBTN.setEnabled(true);
+                    clearPhoto.setEnabled(true);
                     return;
                 } else //username & password is accepted, save company name and switch to next screen,
                 {
@@ -168,6 +166,8 @@ public class TicketActivity extends AppCompatActivity {
                     } catch (JSONException e) {
                         // TODO Auto-generated catch block
                         SubmitTicketBTN.setEnabled(true);
+                        CameraBTN.setEnabled(true);
+                        clearPhoto.setEnabled(true);
                         SubmitTicketBTN.setText("Submit Ticket");
                         e.printStackTrace();
                     }
@@ -242,6 +242,8 @@ public class TicketActivity extends AppCompatActivity {
                         @Override
                         public void run() {
                             SubmitTicketBTN.setEnabled(true);
+                            CameraBTN.setEnabled(true);
+                            clearPhoto.setEnabled(true);
                             ErrorTicket.setText("Invalid Response from Server, please try again.\n " + result);
                             SubmitTicketBTN.setText("Submit Ticket");
 
@@ -261,6 +263,8 @@ public class TicketActivity extends AppCompatActivity {
 
                             @Override
                             public void run() {
+                                CameraBTN.setEnabled(true);
+                                clearPhoto.setEnabled(true);
                                 SubmitTicketBTN.setEnabled(true);
                                 SubmitTicketBTN.setText("Submit Ticket");
 
@@ -296,6 +300,8 @@ public class TicketActivity extends AppCompatActivity {
                         @Override
                         public void run() {
                             ErrorTicket.setText("");
+                            CameraBTN.setEnabled(true);
+                            clearPhoto.setEnabled(true);
                             imageView.setImageBitmap(null);
                             spinner.setVisibility(View.INVISIBLE);
                             SubmitTicketBTN.setEnabled(true);
@@ -321,6 +327,8 @@ public class TicketActivity extends AppCompatActivity {
                         public void run() {
                             spinner.setVisibility(View.INVISIBLE);
                             ErrorTicket.setText(finalError);
+                            CameraBTN.setEnabled(true);
+                            clearPhoto.setEnabled(true);
                             SubmitTicketBTN.setText("Submit Ticket");
                             SubmitTicketBTN.setEnabled(true);
                         }
