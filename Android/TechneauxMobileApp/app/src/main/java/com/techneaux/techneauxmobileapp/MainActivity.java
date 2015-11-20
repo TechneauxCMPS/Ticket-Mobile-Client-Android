@@ -1,5 +1,7 @@
 package com.techneaux.techneauxmobileapp;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
@@ -300,13 +302,48 @@ public class MainActivity extends AppCompatActivity {
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.wipe_data) { //wipes all data from login screen
-            SharedPreferences.Editor editor = getSharedPreferences(MY_PREFS_NAME, MODE_PRIVATE).edit();
-            wipeData(editor);
-            Toast.makeText(getApplicationContext(), "Data Erased",
-                    Toast.LENGTH_LONG).show(); // display confirmation message
+            AlertDialog eraseConfirm = eraseDialogAlertMaker();
+
+            eraseConfirm.show();
+
+
+
             return true;
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    private AlertDialog eraseDialogAlertMaker(){
+
+        AlertDialog eraseDialog =
+
+                new AlertDialog.Builder(this)
+                        //set message, title, and icon
+                        .setTitle("Erase Data?")
+                        .setMessage("Are you sure that you want to erase all stored data?")
+
+                                //set three option buttons
+                        .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int whichButton) {
+                                //whatever should be done when answering "YES" goes here
+                                SharedPreferences.Editor editor = getSharedPreferences(MY_PREFS_NAME, MODE_PRIVATE).edit();
+                                wipeData(editor);
+                                Toast.makeText(getApplicationContext(), "Data Erased",
+                                        Toast.LENGTH_LONG).show();
+
+                            }
+                        })
+                        .setNegativeButton("NO", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int whichButton) {
+                                //whatever should be done when answering "NO" goes here
+
+
+                            }
+                        })//setNegativeButton
+
+                        .create();
+
+        return eraseDialog;
     }
 }

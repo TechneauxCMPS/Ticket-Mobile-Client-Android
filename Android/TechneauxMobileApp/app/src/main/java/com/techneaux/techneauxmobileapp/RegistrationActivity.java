@@ -1,5 +1,7 @@
 package com.techneaux.techneauxmobileapp;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -341,18 +343,51 @@ public class RegistrationActivity extends AppCompatActivity {
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.wipe_data) {
-            SharedPreferences.Editor editor = getSharedPreferences(MY_PREFS_NAME, MODE_PRIVATE).edit();
-            SharedPreferences prefs = getSharedPreferences(MY_PREFS_NAME, MODE_PRIVATE);
-            MainActivity.wipeData(editor);
-            wipeData(editor, prefs);
-            final View v = findViewById(android.R.id.content);
-            Intent myIntent = new Intent(v.getContext(), MainActivity.class);
-            startActivityForResult(myIntent, 0);
-            Toast.makeText(getApplicationContext(), "Data Erased",
-                    Toast.LENGTH_LONG).show();
+            AlertDialog eraseConfirm = eraseDialogAlertMaker();
+
+            eraseConfirm.show();
             return true;
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    private AlertDialog eraseDialogAlertMaker(){
+
+        AlertDialog eraseDialog =
+
+                new AlertDialog.Builder(this)
+                        //set message, title, and icon
+                        .setTitle("Erase Data?")
+                        .setMessage("Are you sure that you want to erase all stored data?")
+
+                                //set three option buttons
+                        .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int whichButton) {
+                                //whatever should be done when answering "YES" goes here
+                                SharedPreferences.Editor editor = getSharedPreferences(MY_PREFS_NAME, MODE_PRIVATE).edit();
+                                SharedPreferences prefs = getSharedPreferences(MY_PREFS_NAME, MODE_PRIVATE);
+                                MainActivity.wipeData(editor);
+                                wipeData(editor, prefs);
+                                final View v = findViewById(android.R.id.content);
+                                Intent myIntent = new Intent(v.getContext(), MainActivity.class);
+                                startActivityForResult(myIntent, 0);
+                                Toast.makeText(getApplicationContext(), "Data Erased",
+                                        Toast.LENGTH_LONG).show();
+
+
+                            }
+                        })
+                        .setNegativeButton("NO", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int whichButton) {
+                                //whatever should be done when answering "NO" goes here
+
+
+                            }
+                        })//setNegativeButton
+
+                        .create();
+
+        return eraseDialog;
     }
 }

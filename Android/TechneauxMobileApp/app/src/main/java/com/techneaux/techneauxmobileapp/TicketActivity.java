@@ -1,6 +1,7 @@
 package com.techneaux.techneauxmobileapp;
 
 import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
@@ -56,6 +57,7 @@ public class TicketActivity extends AppCompatActivity {
     private static Bitmap photo;
     private String photo_ticket;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -108,6 +110,10 @@ public class TicketActivity extends AppCompatActivity {
         Location.setText(prefs.getString("ticket_location", null));
         //end location read
 
+        //location read
+        Description.setText(prefs.getString("ticket_description", null));
+        //end location read
+
         String base = prefs.getString("ticket_photo", null);
         photo_ticket = "";
 
@@ -150,8 +156,7 @@ public class TicketActivity extends AppCompatActivity {
                 {
 
                     SharedPreferences.Editor editor = getSharedPreferences(MY_PREFS_NAME, MODE_PRIVATE).edit();
-                    editor.putString("ticket_location", sLocation);
-                    editor.commit();
+
 
 
                     SharedPreferences prefs = getSharedPreferences(MY_PREFS_NAME, MODE_PRIVATE);
@@ -177,7 +182,7 @@ public class TicketActivity extends AppCompatActivity {
                     Thread thread = new Thread(new API_Communications("https://cmps.techneaux.com/submit-ticket", TicketInfo));
                     //Thread thread = new Thread(new API_Communications("http://httpbin.org/post", TicketInfo));
                     thread.start();
-                    startTestThread();
+                    startTestThread(sLocation);
                     return;
                 }
 
@@ -218,13 +223,24 @@ public class TicketActivity extends AppCompatActivity {
 
     }
 
+@Override
+protected void onPause()
+{
+    super.onPause();
+    SharedPreferences.Editor editor = getSharedPreferences(MY_PREFS_NAME, MODE_PRIVATE).edit();
+    editor.putString("ticket_location", Location.getText().toString());
+    editor.putString("ticket_description", Description.getText().toString());
+    editor.commit();
 
-    protected void startTestThread() {
+
+}
+
+    protected void startTestThread(final String sLocation) {
         Thread t = new Thread() {
             public void run() {
                 Log.d("API", "In thread");
                 SharedPreferences prefs = getSharedPreferences(MY_PREFS_NAME, MODE_PRIVATE);
-                SharedPreferences.Editor editor = getSharedPreferences(MY_PREFS_NAME, MODE_PRIVATE).edit();
+                final SharedPreferences.Editor editor = getSharedPreferences(MY_PREFS_NAME, MODE_PRIVATE).edit();
                 while (API_Communications.result == null) {
                 }
 
@@ -299,6 +315,8 @@ public class TicketActivity extends AppCompatActivity {
 
                         @Override
                         public void run() {
+                            editor.putString("ticket_location", sLocation);
+                            editor.commit();
                             ErrorTicket.setText("");
                             CameraBTN.setEnabled(true);
                             clearPhoto.setEnabled(true);
@@ -411,33 +429,71 @@ public class TicketActivity extends AppCompatActivity {
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.wipe_data) {
-            SharedPreferences.Editor editor = getSharedPreferences(MY_PREFS_NAME, MODE_PRIVATE).edit();
-            SharedPreferences prefs = getSharedPreferences(MY_PREFS_NAME, MODE_PRIVATE);
-            try {
-                MainActivity.wipeData(editor);
-                RegistrationActivity.wipeData(editor, prefs);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            wipeData(editor, prefs);
-            final View v = findViewById(android.R.id.content);
-            Intent myIntent = new Intent(v.getContext(), MainActivity.class);
-            startActivityForResult(myIntent, 0);
+            AlertDialog eraseConfirm = eraseDialogAlertMaker();
+
+            eraseConfirm.show();
+            Toast.makeText(getApplicationContext(), "Data Erased",
+                    Toast.LENGTH_LONG).show();
+
             return true;
         }
         if (id == R.id.EmployeeCredentials) {
             SharedPreferences.Editor editor = getSharedPreferences(MY_PREFS_NAME, MODE_PRIVATE).edit();
-            ;
+            editor.putString("ticket_location", Location.getText().toString());
+            editor.putString("ticket_description", Description.getText().toString());
             editor.putInt("screen_state", 2);
             editor.commit();
             final View v = findViewById(android.R.id.content);
             Intent myIntent = new Intent(v.getContext(), RegistrationActivity.class);
             startActivityForResult(myIntent, 0);
+
+
         }
 
         return super.onOptionsItemSelected(item);
     }
 
+    private AlertDialog eraseDialogAlertMaker(){
+
+        AlertDialog eraseDialog =
+
+                new AlertDialog.Builder(this)
+                        //set message, title, and icon
+                        .setTitle("Erase Data?")
+                        .setMessage("Are you sure that you want to erase all stored data?")
+
+                                //set three option buttons
+                        .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int whichButton) {
+                                //whatever should be done when answering "YES" goes here
+                                SharedPreferences.Editor editor = getSharedPreferences(MY_PREFS_NAME, MODE_PRIVATE).edit();
+                                SharedPreferences prefs = getSharedPreferences(MY_PREFS_NAME, MODE_PRIVATE);
+                                try {
+                                    MainActivity.wipeData(editor);
+                                    RegistrationActivity.wipeData(editor, prefs);
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                }
+                                wipeData(editor, prefs);
+                                final View v = findViewById(android.R.id.content);
+                                Intent myIntent = new Intent(v.getContext(), MainActivity.class);
+                                startActivityForResult(myIntent, 0);
+
+
+                            }
+                        })
+                        .setNegativeButton("NO", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int whichButton) {
+                                //whatever should be done when answering "NO" goes here
+
+
+                            }
+                        })//setNegativeButton
+
+                        .create();
+
+        return eraseDialog;
+    }
     public static void wipeData(SharedPreferences.Editor editor, SharedPreferences prefs) {
         editor.putString("ticket_photo", null);
         editor.putString("ticket_location", null);
