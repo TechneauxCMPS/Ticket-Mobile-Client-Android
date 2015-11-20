@@ -71,7 +71,18 @@ public class RegistrationActivity extends AppCompatActivity {
         }
 
     }
+    @Override
+protected void onPause()
+{
+    super.onPause();
+    SharedPreferences.Editor editor = getSharedPreferences(MY_PREFS_NAME, MODE_PRIVATE).edit();
+    editor.putString("emp_firstname", firstname.getText().toString());
+    editor.putString("emp_lastname", lastname.getText().toString());
+    editor.putString("emp_phonenumber", phonenumber.getText().toString());
+    editor.putString("emp_emailaddress", emailaddress.getText().toString());
+    editor.commit();
 
+}
     /**
      * Preconditions: None
      * Post Conditions: Buttons have functional actions upon click
@@ -131,7 +142,7 @@ public class RegistrationActivity extends AppCompatActivity {
                     verifyButton.setText("Verify");
                     return;
                 } else {
-                    SharedPreferences.Editor editor = getSharedPreferences(MY_PREFS_NAME, MODE_PRIVATE).edit();
+
 
                     SharedPreferences prefs = getSharedPreferences(MY_PREFS_NAME, MODE_PRIVATE);
                     JSONObject EmployeeInfo = new JSONObject();
