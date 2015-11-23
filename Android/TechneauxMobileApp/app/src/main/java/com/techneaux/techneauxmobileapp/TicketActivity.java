@@ -6,7 +6,9 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.v7.app.AppCompatActivity;
 import android.text.SpannableString;
 import android.text.style.UnderlineSpan;
@@ -29,6 +31,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 
 /**
  * Created by CMD Drake on 10/27/2015.
@@ -208,9 +211,13 @@ public class TicketActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
-                Intent cameraIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
-                startActivityForResult(cameraIntent, CAMERA_REQUEST);
-            }
+                imageFilePath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/picture.jpg";
+                File imageFile = new File(imageFilePath);
+                Uri imageFileUri = Uri.fromFile(imageFile); // convert path to Uri
+
+                Intent it = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
+                it.putExtra(android.provider.MediaStore.EXTRA_OUTPUT, imageFileUri);
+                startActivityForResult(it, CAMERA_REQUEST);            }
         });
         imageView.setOnClickListener(new View.OnClickListener() {
 
@@ -222,7 +229,59 @@ public class TicketActivity extends AppCompatActivity {
 
 
     }
+    private String imageFilePath;
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
 
+        if (RESULT_OK == resultCode) {
+
+
+            // Decode it for real
+            BitmapFactory.Options bmpFactoryOptions = new BitmapFactory.Options();
+            bmpFactoryOptions.inJustDecodeBounds = false;
+
+            //imageFilePath image path which you pass with intent
+            Bitmap bmp = BitmapFactory.decodeFile(imageFilePath, bmpFactoryOptions);
+
+            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+            bmp.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream);
+            byte[] byteArray = byteArrayOutputStream.toByteArray();
+            String encoded = Base64.encodeToString(byteArray, Base64.NO_WRAP);
+            Log.d("API", "Init Photo Size:" + encoded.length());
+            SharedPreferences.Editor editor = getSharedPreferences(MY_PREFS_NAME, MODE_PRIVATE).edit();
+            editor.putString("ticket_photo", encoded);
+            editor.commit();
+
+            photo_ticket = encoded;
+
+            // Display it
+            imageView.setImageBitmap(bmp);
+        }
+    }
+    /*@Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == CAMERA_REQUEST && resultCode == RESULT_OK) {
+            photo = (Bitmap) data.getExtras().get("data");
+            imageView.setImageBitmap(photo);
+            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+            photo.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream);
+            byte[] byteArray = byteArrayOutputStream.toByteArray();
+            String encoded = Base64.encodeToString(byteArray, Base64.NO_WRAP);
+            Log.d("API", "Init Photo Size:" + encoded.length());
+            SharedPreferences.Editor editor = getSharedPreferences(MY_PREFS_NAME, MODE_PRIVATE).edit();
+            editor.putString("ticket_photo", encoded);
+            editor.commit();
+
+            photo_ticket = encoded;
+
+            // ClipboardManager clipboard = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
+            //ClipData clip = ClipData.newPlainText("lol", encoded);
+            //clipboard.setPrimaryClip(clip);
+
+        }
+    }
+*/
 @Override
 protected void onPause()
 {
@@ -377,28 +436,6 @@ protected void onPause()
         imageDialog.show();
     }
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == CAMERA_REQUEST && resultCode == RESULT_OK) {
-            photo = (Bitmap) data.getExtras().get("data");
-            imageView.setImageBitmap(photo);
-            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-            photo.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream);
-            byte[] byteArray = byteArrayOutputStream.toByteArray();
-            String encoded = Base64.encodeToString(byteArray, Base64.NO_WRAP);
-            Log.d("API", "Init Photo Size:" + encoded.length());
-            SharedPreferences.Editor editor = getSharedPreferences(MY_PREFS_NAME, MODE_PRIVATE).edit();
-            editor.putString("ticket_photo", encoded);
-            editor.commit();
-
-            photo_ticket = encoded;
-
-            // ClipboardManager clipboard = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
-            //ClipData clip = ClipData.newPlainText("lol", encoded);
-            //clipboard.setPrimaryClip(clip);
-
-        }
-    }
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
