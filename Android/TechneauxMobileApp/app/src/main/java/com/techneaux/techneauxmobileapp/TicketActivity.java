@@ -244,8 +244,15 @@ public class TicketActivity extends AppCompatActivity {
             //imageFilePath image path which you pass with intent
             Bitmap bmp = BitmapFactory.decodeFile(imageFilePath, bmpFactoryOptions);
 
+            Bitmap scaledBitmap = scaleDown(bmp, 1000, true);
+
+
+
+
+
+
             ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-            bmp.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream);
+            scaledBitmap.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream);
             byte[] byteArray = byteArrayOutputStream.toByteArray();
             String encoded = Base64.encodeToString(byteArray, Base64.NO_WRAP);
             Log.d("API", "Init Photo Size:" + encoded.length());
@@ -258,6 +265,19 @@ public class TicketActivity extends AppCompatActivity {
             // Display it
             imageView.setImageBitmap(bmp);
         }
+    }
+
+    public static Bitmap scaleDown(Bitmap realImage, float maxImageSize,
+                                   boolean filter) {
+        float ratio = Math.min(
+                (float) maxImageSize / realImage.getWidth(),
+                (float) maxImageSize / realImage.getHeight());
+        int width = Math.round((float) ratio * realImage.getWidth());
+        int height = Math.round((float) ratio * realImage.getHeight());
+
+        Bitmap newBitmap = Bitmap.createScaledBitmap(realImage, width,
+                height, filter);
+        return newBitmap;
     }
     /*@Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
