@@ -19,7 +19,6 @@ import android.widget.Toast;
 
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.w3c.dom.Text;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -54,13 +53,13 @@ public class MainActivity extends AppCompatActivity {
 
         final View v = findViewById(android.R.id.content);
 
-        if( (prefs.getInt("screen_state",0) == 2  ))
-        {
+        if( (prefs.getInt("screen_state",0) == 2  )) //checks saved state from last run time,
+        {                                            // if state = 2, go to Registration
 
             Intent myIntent = new Intent(v.getContext(), RegistrationActivity.class);
             startActivityForResult(myIntent, 0);
         }
-        else if( (prefs.getInt("screen_state",0) == 3  )) {
+        else if( (prefs.getInt("screen_state",0) == 3  )) { //if 3, go to Ticket Activity
 
             Intent myIntent = new Intent(v.getContext(), TicketActivity.class);
             startActivityForResult(myIntent, 0);
@@ -117,22 +116,25 @@ public class MainActivity extends AppCompatActivity {
                     return;
                 } else //username & password is accepted, save company name and switch to next screen,
                 {
-                    SharedPreferences.Editor editor = getSharedPreferences(MY_PREFS_NAME, MODE_PRIVATE).edit();
-                    JSONObject login = new JSONObject();
+
+                    JSONObject login = new JSONObject(); //create JSON Obj to hold data for API
                     try {
-                        login.put("companyID", sUsername);
-                        login.put("password", sPassword);
+                        login.put("companyID", sUsername); //push companyID
+                        login.put("password", sPassword); //push password
 
 
                     } catch (JSONException e) {
                         // TODO Auto-generated catch block
                         e.printStackTrace();
                     }
-                    spinner.setVisibility(v.VISIBLE);
+                    spinner.setVisibility(v.VISIBLE); //have load spinne be visible
 
+                    //Code to create a thread to send data to API
                     Thread thread = new Thread(new API_Communications("https://cmps.techneaux.com/login", login));
                     thread.start();
-                    runThread(v, sUsername);
+
+
+                    runThread(v, sUsername);//process API data returned
                     return;
                 }
 
@@ -148,21 +150,21 @@ public class MainActivity extends AppCompatActivity {
                 SharedPreferences.Editor editor = getSharedPreferences(MY_PREFS_NAME, MODE_PRIVATE).edit();
 
 
-                while (API_Communications.result == null) {
+                while (API_Communications.result == null) { // wait for reply from API
                 }
 
-                final String result = API_Communications.result;
+                final String result = API_Communications.result; //get response from API
                 JSONObject obj = null;
-                try {
+                try { //attempt to make json obj from API Response
 
                     obj = new JSONObject(result);
 
 
-                } catch (Throwable t) {
+                } catch (Throwable t) { // post error message if api does not give a proper JSON obj
                     runOnUiThread(new Runnable() {
 
                         @Override
-                        public void run() {
+                        public void run() { //need to invoke runonUI to set text boxes
                             errorText.setText("Invalid Response from Server, please try again." + result);
                             submitLoginInfo.setText("Submit");
                             submitLoginInfo.setEnabled(true);
@@ -172,16 +174,16 @@ public class MainActivity extends AppCompatActivity {
 
 
                 }
-                String error = null;
-                if (obj.has("niceMessage")) {
-                    try {
-                        error = obj.get("niceMessage").toString();
+                String error = null; //string to hold error from api json reply
+                if (obj.has("niceMessage")) { //parse a nice debug message error
+                    try {                     //from API to print to screen
+                        error = obj.get("niceMessage").toString(); //parse out nicemessage
 
                     } catch (JSONException e) {
                         runOnUiThread(new Runnable() {
 
                             @Override
-                            public void run() {
+                            public void run() { //need to invoke runonUI to set text boxes
                                 spinner.setVisibility(v.INVISIBLE);
                                 submitLoginInfo.setText("Submit");
                                 submitLoginInfo.setEnabled(true);
@@ -191,10 +193,10 @@ public class MainActivity extends AppCompatActivity {
                         e.printStackTrace();
                     }
                 }
-                if (obj.has("authKey")) {
-                    if (error == null) {
+                if (obj.has("authKey")) { //check if the object has a field for an authkey
+                    if (error == null) { //make sure there is no error from api
                         try {
-                            String authKey = obj.get("authKey").toString();
+                            String authKey = obj.get("authKey").toString(); //get authkey from jsonobj
                             editor.putString("authKey", authKey);
 
                             editor.commit();
@@ -202,7 +204,7 @@ public class MainActivity extends AppCompatActivity {
                             runOnUiThread(new Runnable() {
 
                                 @Override
-                                public void run() {
+                                public void run() { //need to invoke runonUI to set text boxes
                                     spinner.setVisibility(v.INVISIBLE);
                                     submitLoginInfo.setText("Submit");
                                     submitLoginInfo.setEnabled(true);
@@ -213,28 +215,30 @@ public class MainActivity extends AppCompatActivity {
                         }
                     }
 
-                    editor.putString("companyname", sUsername);
-                    editor.putInt("screen_state", 2);
+                    editor.putString("companyname", sUsername); //save username to shared prefs
+                    editor.putInt("screen_state", 2); //update app state to 2, so app can jump to the next screen.
 
                     editor.commit();
                     runOnUiThread(new Runnable() {
 
                         @Override
-                        public void run() {
+                        public void run() { //need to invoke runonUI to set text boxes
                             spinner.setVisibility(v.INVISIBLE);
                             submitLoginInfo.setText("Submit");
                             submitLoginInfo.setEnabled(true);
+
+                            //go to next screen
                             Intent myIntent = new Intent(v.getContext(), RegistrationActivity.class);
                             startActivityForResult(myIntent, 0);
                         }
                     });
 
                 } else {
-                    final String finalError = error;
+                    final String finalError = error; //got an error to print to screen
                     runOnUiThread(new Runnable() {
 
                         @Override
-                        public void run() {
+                        public void run() { //need to invoke runonUI to set text boxes
                             spinner.setVisibility(v.INVISIBLE);
                             submitLoginInfo.setText("Submit");
                             submitLoginInfo.setEnabled(true);
@@ -245,7 +249,7 @@ public class MainActivity extends AppCompatActivity {
                 }
 
             }
-        }.start();
+        }.start();//thread starter
     }
 
     @Override
@@ -264,18 +268,17 @@ public class MainActivity extends AppCompatActivity {
     {
 
 
-        editor.putString("ticket_photo", null);
-        editor.putString("ticket_location", null);
-        editor.putInt("screen_state", 0);
-        editor.putString("emp_firstname", null);
-        editor.putString("emp_lastname", null);
-        editor.putString("emp_phonenumber", null);
-        editor.putString("emp_emailaddress", null);
-        editor.putInt("screen_state", 0);
+        editor.putString("ticket_photo", null); //wipe out ticket photo data
+        editor.putString("ticket_location", null); //wipe out ticket location data
+        editor.putInt("screen_state", 0); // wipe app state to defaults
+        editor.putString("emp_firstname", null); //wipe firstname
+        editor.putString("emp_lastname", null); //wipe last name
+        editor.putString("emp_phonenumber", null); // wipe phone number
+        editor.putString("emp_emailaddress", null); //wipe email address
         editor.putString("companyname", null); //Wipe out company name
         editor.putInt("screen_state", 0); //Wipe out company name
-        editor.putString("authKey",null);
-        editor.commit();
+        editor.putString("authKey",null); //wipe authkey
+        editor.commit(); //save!
 
 
         username.setText(null); //sets field to empty
@@ -302,9 +305,10 @@ public class MainActivity extends AppCompatActivity {
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.wipe_data) { //wipes all data from login screen
-            AlertDialog eraseConfirm = eraseDialogAlertMaker();
+            AlertDialog eraseConfirm = eraseDialogAlertMaker(); //dialog before wiping
+                                                            // data to confirm wipe
 
-            eraseConfirm.show();
+            eraseConfirm.show(); //show dialog
 
 
 

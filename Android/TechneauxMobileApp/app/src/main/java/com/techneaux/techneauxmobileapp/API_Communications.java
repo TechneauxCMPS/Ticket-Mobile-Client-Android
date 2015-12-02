@@ -1,7 +1,5 @@
 package com.techneaux.techneauxmobileapp;
 
-import android.content.Context;
-import android.text.ClipboardManager;
 import android.util.Log;
 
 import org.apache.http.HttpResponse;
@@ -15,10 +13,8 @@ import org.apache.http.conn.scheme.Scheme;
 import org.apache.http.conn.scheme.SchemeRegistry;
 import org.apache.http.conn.ssl.SSLSocketFactory;
 import org.apache.http.entity.ByteArrayEntity;
-import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager;
-import org.apache.http.message.BasicHeader;
 import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.HttpParams;
 import org.apache.http.params.HttpProtocolParams;
@@ -27,20 +23,11 @@ import org.apache.http.protocol.HTTP;
 import org.apache.http.protocol.HttpContext;
 import org.json.JSONObject;
 
-import java.io.BufferedInputStream;
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.io.UnsupportedEncodingException;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.ProtocolException;
 import java.net.Socket;
-import java.net.URL;
 import java.net.UnknownHostException;
 import java.security.KeyManagementException;
 import java.security.KeyStore;
@@ -48,27 +35,27 @@ import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.security.UnrecoverableKeyException;
-import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
-import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 
-import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.HttpsURLConnection;
-import javax.net.ssl.KeyManager;
 import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLSession;
 import javax.net.ssl.TrustManager;
-import javax.net.ssl.TrustManagerFactory;
 import javax.net.ssl.X509TrustManager;
 
 
 public class API_Communications implements Runnable {
 
-    public static String urlSTR;
-    public static JSONObject json;
-    public static String result;
+    public static String urlSTR; //url string
+    public static JSONObject json; //json obj
+    public static String result; //result for other activities to pull
 
+    /**
+     * Preconditions: none
+     * Post Conditions: init the url string json object and result variables
+     * Parameters: url string json object and result
+     * Use: when starting API Communications
+     */
     public API_Communications(String setUrl, JSONObject setJson) {
         urlSTR = setUrl;
         json = setJson;
@@ -77,12 +64,23 @@ public class API_Communications implements Runnable {
     }
 
 
+    /**
+     * Preconditions: none
+     * Post Conditions: runs HTTPS Post to API
+     * Parameters: None
+     * Use: when starting API Communications
+     */
     public void run() {
 
         postData();
     }
 
-
+    /**
+     * Note: Please only use this for development testing (for self signed in certificate). Adding this to the
+     * public application is a serious blunder.
+     *
+     * @author Sandip Jadhav
+     */
     public static DefaultHttpClient createSSLHTTP() throws UnrecoverableKeyException, NoSuchAlgorithmException, KeyStoreException, KeyManagementException {
 
         // Setup a custom SSL <a class="zem_slink" title="Factory method pattern" href="http://en.wikipedia.org/wiki/Factory_method_pattern" target="_blank" rel="wikipedia">Factory object</a> which simply ignore the certificates
@@ -108,12 +106,19 @@ public class API_Communications implements Runnable {
         // To-do: Get or Post the data using this newly created http client object
         return client;
     }
-
+    /**
+     * Preconditions: none
+     * Post Conditions: HTTPS Post to API
+     * Parameters: None
+     * Use: when sending API Communications
+     */
     public static void postData() {
         // Create a new HttpClient and Post Header
         HttpClient httpclient = new DefaultHttpClient();
         HttpPost httppost = new HttpPost(urlSTR);
 
+
+        //bypassing ssl self-signed cert
         try {
             httpclient = createSSLHTTP();
         } catch (UnrecoverableKeyException e) {
@@ -128,27 +133,25 @@ public class API_Communications implements Runnable {
 
 
         try {
-
-
-            // StringEntity se = new StringEntity(json.toString());
-            // se.setContentType(new BasicHeader(HTTP.CONTENT_TYPE, "application/json"));
             httppost.setEntity(new ByteArrayEntity(
-                    json.toString().getBytes("UTF8")));
-            //httppost.setEntity(se);
-
-
+                    json.toString().getBytes("UTF8"))); //defines httppost body
             // Execute HTTP Post Request
             Log.d("API", "json: " + json);
             Log.d("API", "Count: " + json.toString().length());
             HttpContext localContext = new BasicHttpContext();
+
+            //set http client params
             httpclient.getParams().setBooleanParameter("http.protocol.expect-continue", false);
+
+            //get http response from api
             HttpResponse response = httpclient.execute(httppost, localContext);
 
 
-            // for JSON:
+            // for JSON response :
             if (response != null) {
-                InputStream is = response.getEntity().getContent();
+                InputStream is = response.getEntity().getContent(); //get body response
 
+                //decode response into string
                 BufferedReader reader = new BufferedReader(new InputStreamReader(is));
                 StringBuilder sb = new StringBuilder();
 
@@ -166,6 +169,7 @@ public class API_Communications implements Runnable {
                         e.printStackTrace();
                     }
                 }
+                //end decode response to string
                 result = sb.toString();
                 Log.d("API", "Result: " + result);
                 Log.d("API", response.getStatusLine().toString());

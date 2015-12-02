@@ -40,34 +40,39 @@ public class RegistrationActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.employee_info);
+        //********Initialize the layout objects to a variable for manipulation********
 
-        verifyButton = (Button) findViewById(R.id.verifyButton);      // verify button
+        verifyButton = (Button) findViewById(R.id.verifyButton);
         firstname = (EditText) findViewById(R.id.firstname);
         lastname = (EditText) findViewById(R.id.lastname);
         phonenumber = (EditText) findViewById(R.id.Phone);
-        emailaddress = (EditText) findViewById(R.id.emailaddress);
         emailaddress = (EditText) findViewById(R.id.emailaddress);
         loggedInName = (TextView) findViewById(R.id.companynameLoggedIn);
         empError = (TextView) findViewById(R.id.employeeError);
         spinner = (ProgressBar) findViewById(R.id.employeeProgressBar);
         spinner.setVisibility(View.INVISIBLE);
-        setButtons();
+        //********End Initialize the layout objects to a variable for manipulation********
 
+        setButtons(); //set button onclick listeners
+
+        //********Initialize the text boxes to data from shared preferences, if any exist ********
         SharedPreferences prefs = getSharedPreferences(MY_PREFS_NAME, MODE_PRIVATE);
         firstname.setText(prefs.getString("emp_firstname", null)); // init first name to what was stored
         lastname.setText(prefs.getString("emp_lastname", null)); // init last name to what was stored
         phonenumber.setText(prefs.getString("emp_phonenumber", null)); // init phone number to what was stored
         emailaddress.setText(prefs.getString("emp_emailaddress", null)); // init email address to what was stored
-
         String mystring = new String("Company Name: " + prefs.getString("companyname", null));
         SpannableString content = new SpannableString(mystring);
         content.setSpan(new UnderlineSpan(), 14, mystring.length(), 0);
         loggedInName.setText(content); // init companyname to what was stored
+        //********End Initialize the text boxes to data from shared preferences, if any exist ********
+
+
         final View v = findViewById(android.R.id.content);
 
-        if ((prefs.getInt("screen_state", 0) == 3)) {
+        if ((prefs.getInt("screen_state", 0) == 3)) { //check if state is 3 to go to ticket screen
             Intent myIntent = new Intent(v.getContext(), TicketActivity.class);
-            startActivityForResult(myIntent, 0);
+            startActivityForResult(myIntent, 0); //go to ticket activity
         }
 
     }
@@ -75,12 +80,15 @@ public class RegistrationActivity extends AppCompatActivity {
 protected void onPause()
 {
     super.onPause();
+
+    //****Store Data on application minimize to shared prefs ****************
     SharedPreferences.Editor editor = getSharedPreferences(MY_PREFS_NAME, MODE_PRIVATE).edit();
     editor.putString("emp_firstname", firstname.getText().toString());
     editor.putString("emp_lastname", lastname.getText().toString());
     editor.putString("emp_phonenumber", phonenumber.getText().toString());
     editor.putString("emp_emailaddress", emailaddress.getText().toString());
     editor.commit();
+    //****End Store Data on application minimize to shared prefs ****************
 
 }
     /**
@@ -136,7 +144,7 @@ protected void onPause()
                     verifyButton.setText("Verify");
                     return;
                 }
-                if (isEmailValid(sEmail) == false) {
+                if (isEmailValid(sEmail) == false) { //check to see if email is validly formed
                     empError.setText("Email Address not valid!");
                     verifyButton.setEnabled(true);
                     verifyButton.setText("Verify");
@@ -145,8 +153,8 @@ protected void onPause()
 
 
                     SharedPreferences prefs = getSharedPreferences(MY_PREFS_NAME, MODE_PRIVATE);
-                    JSONObject EmployeeInfo = new JSONObject();
-                    try {
+                    JSONObject EmployeeInfo = new JSONObject(); //create json obj
+                    try { //store data to json object to send to API
                         EmployeeInfo.put("authKey", prefs.getString("authKey", null));
                         EmployeeInfo.put("firstName", sFirstName);
                         EmployeeInfo.put("lastName", sLastName);
@@ -158,10 +166,12 @@ protected void onPause()
                         // TODO Auto-generated catch block
                         e.printStackTrace();
                     }
-                    spinner.setVisibility(v.VISIBLE);
+                    spinner.setVisibility(v.VISIBLE);//make load spinner visible
+
                     Thread thread = new Thread(new API_Communications("https://cmps.techneaux.com/update-employee", EmployeeInfo));
-                    thread.start();
-                    runThread(sFirstName,sLastName,sEmail,sPhone, v );
+                    thread.start(); //send data to API in other thread
+
+                    runThread(sFirstName,sLastName,sEmail,sPhone, v ); //run sep thread to handle data from API
                     return;
                 }
 
@@ -174,24 +184,23 @@ protected void onPause()
             public void run() {
                 SharedPreferences.Editor editor = getSharedPreferences(MY_PREFS_NAME, MODE_PRIVATE).edit();
 
-                SharedPreferences prefs = getSharedPreferences(MY_PREFS_NAME, MODE_PRIVATE);
 
-                while (API_Communications.result == null) {
+                while (API_Communications.result == null) { //wait for api to respond
                 }
 
-                final String result = API_Communications.result;
+                final String result = API_Communications.result; //get result from api
 
-                JSONObject obj = null;
-                try {
+                JSONObject obj = null; //make json obj to hold api response
+                try { //try to form json from api response
 
                     obj = new JSONObject(result);
 
 
-                } catch (Throwable t) {
+                } catch (Throwable t) { //incase api response not valid json
                     runOnUiThread(new Runnable() {
 
                         @Override
-                        public void run() {
+                        public void run() { //invoke runonUI to alter layout objects
                             verifyButton.setEnabled(true);
                             verifyButton.setText("Verify");
                             empError.setText("Invalid Response from Server, please try again.\n " + result);
@@ -200,31 +209,32 @@ protected void onPause()
 
 
                 }
-                String error = null;
-                if (obj.has("niceMessage")) {
+                String error = null; //string to hold possible error message
+                if (obj.has("niceMessage")) { //check if a nicemessage exists in the json obj
                     try {
-                        error = obj.get("niceMessage").toString();
+                        error = obj.get("niceMessage").toString(); //take error from json to string
 
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
                 }
-                if (error == null) {
+                if (error == null) { // Store data to shared preferences
                     editor.putString("emp_firstname", sFirstName);
                     editor.putString("emp_lastname", sLastName);
                     editor.putString("emp_phonenumber", sPhone);
                     editor.putString("emp_emailaddress", sEmail);
                     editor.putInt("screen_state", 3);
                     editor.commit();
+
                     runOnUiThread(new Runnable() {
 
                         @Override
-                        public void run() {
+                        public void run() {//invoke runonui to update layout objs
                             verifyButton.setEnabled(true);
                             verifyButton.setText("Verify");
                             spinner.setVisibility(View.INVISIBLE);
                             Intent myIntent = new Intent(v.getContext(), TicketActivity.class);
-                            startActivityForResult(myIntent, 0);
+                            startActivityForResult(myIntent, 0); //go to ticket activity
                         }
                     });
 
@@ -329,6 +339,7 @@ protected void onPause()
             phonenumber.setText(null); //sets field to empty
             emailaddress.setText(null); //sets field to empty
         }
+        //wipe all shared preferences
         editor.putString("ticket_photo", null);
         editor.putString("ticket_location", null);
         editor.putInt("screen_state", 0);
@@ -341,6 +352,7 @@ protected void onPause()
         editor.putInt("screen_state", 0); //Wipe out company name
         editor.putString("authKey", null);
         editor.commit();
+        //end wipe
 
 
     }
@@ -354,9 +366,11 @@ protected void onPause()
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.wipe_data) {
-            AlertDialog eraseConfirm = eraseDialogAlertMaker();
+            AlertDialog eraseConfirm = eraseDialogAlertMaker(); //dialog before wiping
+            // data to confirm wipe
 
-            eraseConfirm.show();
+            eraseConfirm.show(); //show dialog
+
             return true;
         }
 

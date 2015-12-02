@@ -47,24 +47,26 @@ public class TicketActivity extends AppCompatActivity {
 
     private static EditText Location; //object to link to the location layout object
     private static EditText Description; //object to link to the description layout object
-    private static TextView ErrorTicket;
-    private static Button clearPhoto;
+    private static TextView ErrorTicket; //object to link to the errorticket layout object
+    private static Button clearPhoto; //object to link to the clear photo button layout object
 
-    private static Button SubmitTicketBTN;
-    private static Button CameraBTN;
+    private static Button SubmitTicketBTN; //object to link to the submit btn layout object
+    private static Button CameraBTN; //object to link to the take a picture btn layout object
 
-    private ProgressBar spinner;
+    private ProgressBar spinner; //load spinner used to show app is sending data to API
     private static final int CAMERA_REQUEST = 1888;
-    private static ImageView imageView;
+    private static ImageView imageView; //imageview for photo preview
 
-    private static Bitmap photo;
-    private String photo_ticket;
+    private static Bitmap photo; //holds bitmap representation of picture taken
+    private String photo_ticket; //holds base64 representation of picture taken
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.ticket_activity);
+
+        //********Initialize the layout objects to a variable for manipulation********
         employeename = (TextView) findViewById(R.id.ticket_employeename);
         companyname = (TextView) findViewById(R.id.ticket_companynameLoggedIn);
         phonenumber = (TextView) findViewById(R.id.ticket_phonenumber);
@@ -78,7 +80,10 @@ public class TicketActivity extends AppCompatActivity {
         clearPhoto = (Button) this.findViewById(R.id.clearPhoto);
         spinner = (ProgressBar) findViewById(R.id.employeeProgressBar);
         spinner.setVisibility(View.INVISIBLE);
-        setButtons();
+        //********End Initialize the layout objects to a variable for manipulation********
+
+        setButtons(); //set button onclick listeners
+
 
         SharedPreferences prefs = getSharedPreferences(MY_PREFS_NAME, MODE_PRIVATE);
         //Company name read
@@ -117,6 +122,7 @@ public class TicketActivity extends AppCompatActivity {
         Description.setText(prefs.getString("ticket_description", null));
         //end location read
 
+        //read and decode photo into bitmap from shared prefs
         String base = prefs.getString("ticket_photo", null);
         photo_ticket = "";
 
@@ -127,6 +133,7 @@ public class TicketActivity extends AppCompatActivity {
             imageView.setImageBitmap(
                     BitmapFactory.decodeByteArray(imageAsBytes, 0, imageAsBytes.length));
         }
+        //end read and decode photo into bitmap from shared prefs
     }
 
     /**
@@ -140,10 +147,13 @@ public class TicketActivity extends AppCompatActivity {
         // throws a toast saying information has been verfied when Verify button is clicked.
         SubmitTicketBTN.setOnClickListener(new Button.OnClickListener() {
             public void onClick(View v) {
+                //disable buttons while attempting to talk with API
                 SubmitTicketBTN.setEnabled(false);
                 SubmitTicketBTN.setText("Submitting...");
                 CameraBTN.setEnabled(false);
                 clearPhoto.setEnabled(false);
+                //end disable buttons while attempting to talk with API
+
                 String sDescription = Description.getText().toString(); //get text from username layout object
                 String sLocation = Location.getText().toString(); //get text from password layout object
 
@@ -157,21 +167,16 @@ public class TicketActivity extends AppCompatActivity {
                     return;
                 } else //username & password is accepted, save company name and switch to next screen,
                 {
-
-                    SharedPreferences.Editor editor = getSharedPreferences(MY_PREFS_NAME, MODE_PRIVATE).edit();
-
-
-
                     SharedPreferences prefs = getSharedPreferences(MY_PREFS_NAME, MODE_PRIVATE);
-                    JSONObject TicketInfo = new JSONObject();
-                    try {
+                    JSONObject TicketInfo = new JSONObject(); //make json object
+                    try { //populate json object with data for API
                         TicketInfo.put("authKey", prefs.getString("authKey", null));
                         TicketInfo.put("location", sLocation);
                         TicketInfo.put("description", sDescription);
                         TicketInfo.put("photo", photo_ticket);
 
 
-                    } catch (JSONException e) {
+                    } catch (JSONException e) {//re-enable all buttons
                         // TODO Auto-generated catch block
                         SubmitTicketBTN.setEnabled(true);
                         CameraBTN.setEnabled(true);
@@ -181,11 +186,11 @@ public class TicketActivity extends AppCompatActivity {
                     }
                     Log.d("API", "In Ticket: START " + photo_ticket + " END");
                     Log.d("API", "In Ticket Count: " + photo_ticket.length());
-                    spinner.setVisibility(v.VISIBLE);
+                    spinner.setVisibility(v.VISIBLE); //sets spinner loader to visible
                     Thread thread = new Thread(new API_Communications("https://cmps.techneaux.com/submit-ticket", TicketInfo));
-                    //Thread thread = new Thread(new API_Communications("http://httpbin.org/post", TicketInfo));
-                    thread.start();
-                    startTestThread(sLocation);
+                    thread.start(); //send data to API via helper thread
+
+                    startTestThread(sLocation); //handle API response on another thread
                     return;
                 }
 
@@ -197,7 +202,7 @@ public class TicketActivity extends AppCompatActivity {
         clearPhoto.setOnClickListener(new View.OnClickListener() {
 
             @Override
-            public void onClick(View v) {
+            public void onClick(View v) {//listener to clear photo from app
                 SharedPreferences.Editor editor = getSharedPreferences(MY_PREFS_NAME, MODE_PRIVATE).edit();
                 photo_ticket = "";
                 editor.putString("ticket_photo", null);
@@ -209,7 +214,7 @@ public class TicketActivity extends AppCompatActivity {
         CameraBTN.setOnClickListener(new View.OnClickListener() {
 
             @Override
-            public void onClick(View v) {
+            public void onClick(View v) { //listener to take a picture and store into phone app.
 
                 imageFilePath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/picture.jpg";
                 File imageFile = new File(imageFilePath);
@@ -230,6 +235,13 @@ public class TicketActivity extends AppCompatActivity {
 
     }
     private String imageFilePath;
+
+    /**
+     * Preconditions: None
+     * Post Conditions: check for photo and store photo into applicatio
+     * Parameters: requestCode, resultcode, and data
+     * Use: when we need to take a picture.
+     */
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -244,29 +256,33 @@ public class TicketActivity extends AppCompatActivity {
             //imageFilePath image path which you pass with intent
             Bitmap bmp = BitmapFactory.decodeFile(imageFilePath, bmpFactoryOptions);
 
-            Bitmap scaledBitmap = scaleDown(bmp, 1000, true);
+            Bitmap scaledBitmap = scaleDown(bmp, 1000, true); //scale picture to 1000 pixel resolution
 
-
-
-
-
-
+            //convert bitmap to base64
             ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
             scaledBitmap.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream);
             byte[] byteArray = byteArrayOutputStream.toByteArray();
             String encoded = Base64.encodeToString(byteArray, Base64.NO_WRAP);
+            //end convert bitmap to base64
+
             Log.d("API", "Init Photo Size:" + encoded.length());
             SharedPreferences.Editor editor = getSharedPreferences(MY_PREFS_NAME, MODE_PRIVATE).edit();
             editor.putString("ticket_photo", encoded);
-            editor.commit();
+            editor.commit(); // save base64 to shared preferences
 
-            photo_ticket = encoded;
+
+            photo_ticket = encoded; // set base64 to global var
 
             // Display it
-            imageView.setImageBitmap(bmp);
+            imageView.setImageBitmap(bmp); //set pic taken to the preview image view
         }
     }
-
+    /**
+     * Preconditions: has a bitmap to scale down
+     * Post Conditions: photo scaled to desired size
+     * Parameters: bitmap image, max size of photo, and filter
+     * Use: when we need to take a picture.
+     */
     public static Bitmap scaleDown(Bitmap realImage, float maxImageSize,
                                    boolean filter) {
         float ratio = Math.min(
@@ -279,33 +295,13 @@ public class TicketActivity extends AppCompatActivity {
                 height, filter);
         return newBitmap;
     }
-    /*@Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == CAMERA_REQUEST && resultCode == RESULT_OK) {
-            photo = (Bitmap) data.getExtras().get("data");
-            imageView.setImageBitmap(photo);
-            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-            photo.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream);
-            byte[] byteArray = byteArrayOutputStream.toByteArray();
-            String encoded = Base64.encodeToString(byteArray, Base64.NO_WRAP);
-            Log.d("API", "Init Photo Size:" + encoded.length());
-            SharedPreferences.Editor editor = getSharedPreferences(MY_PREFS_NAME, MODE_PRIVATE).edit();
-            editor.putString("ticket_photo", encoded);
-            editor.commit();
 
-            photo_ticket = encoded;
-
-            // ClipboardManager clipboard = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
-            //ClipData clip = ClipData.newPlainText("lol", encoded);
-            //clipboard.setPrimaryClip(clip);
-
-        }
-    }
-*/
 @Override
 protected void onPause()
 {
     super.onPause();
+
+    //store ticket location and description to memory on app minimize
     SharedPreferences.Editor editor = getSharedPreferences(MY_PREFS_NAME, MODE_PRIVATE).edit();
     editor.putString("ticket_location", Location.getText().toString());
     editor.putString("ticket_description", Description.getText().toString());
@@ -313,20 +309,27 @@ protected void onPause()
 
 
 }
-
+    /**
+     * Preconditions: data  sent to API
+     * Post Conditions: response from API handled
+     * Parameters: location sent to ticket api
+     * Use: when we need to send a ticket
+     */
     protected void startTestThread(final String sLocation) {
         Thread t = new Thread() {
             public void run() {
                 Log.d("API", "In thread");
                 SharedPreferences prefs = getSharedPreferences(MY_PREFS_NAME, MODE_PRIVATE);
                 final SharedPreferences.Editor editor = getSharedPreferences(MY_PREFS_NAME, MODE_PRIVATE).edit();
-                while (API_Communications.result == null) {
+
+
+                while (API_Communications.result == null) { //wait for API result
                 }
 
-                final String result = API_Communications.result;
+                final String result = API_Communications.result; //get api result
 
-                JSONObject obj = null;
-                try {
+                JSONObject obj = null; //make json obj
+                try {//try to parse api result into json obj
 
                     obj = new JSONObject(result);
 
@@ -335,7 +338,7 @@ protected void onPause()
                     runOnUiThread(new Runnable() {
 
                         @Override
-                        public void run() {
+                        public void run() {//use runonUI to modify layout objects
                             SubmitTicketBTN.setEnabled(true);
                             CameraBTN.setEnabled(true);
                             clearPhoto.setEnabled(true);
@@ -347,17 +350,17 @@ protected void onPause()
 
 
                 }
-                String error = null;
-                if (obj.has("niceMessage")) {
+                String error = null; //string to hold error message if any from API.
+                if (obj.has("niceMessage")) {//checks for error message
                     try {
-                        error = obj.get("niceMessage").toString();
+                        error = obj.get("niceMessage").toString(); //pulls niceMessage out of json from API
 
                     } catch (JSONException e) {
                         e.printStackTrace();
                         runOnUiThread(new Runnable() {
 
                             @Override
-                            public void run() {
+                            public void run() { //alter UI objects
                                 CameraBTN.setEnabled(true);
                                 clearPhoto.setEnabled(true);
                                 SubmitTicketBTN.setEnabled(true);
@@ -368,12 +371,13 @@ protected void onPause()
 
                     }
                 }
-                String PhotoStatus = "";
-                if (error == null) {
+                String PhotoStatus = ""; //string to display check if picture is present
+                if (error == null) {//check for no error
 
+                    //condition to know no pic present to send
                     if (prefs.getString("ticket_photo", null) == null) {
                         PhotoStatus = "No Photo";
-                    } else {
+                    } else { //otherwise there is a pic
                         PhotoStatus = "Photo Attached";
                     }
 
@@ -383,17 +387,17 @@ protected void onPause()
                         public void run() {
                             Description.setText("");
                         }
-                    });
+                    }); //clear description
 
 
                     photo_ticket = "";
-                    editor.putString("ticket_photo", null);
+                    editor.putString("ticket_photo", null); //wipe photo off memory
                     editor.commit();
                     final String finalPhotoStatus = PhotoStatus;
                     runOnUiThread(new Runnable() {
 
                         @Override
-                        public void run() {
+                        public void run() { //do all UI updates to text boxes and make confirmation toast
                             editor.putString("ticket_location", sLocation);
                             editor.commit();
                             ErrorTicket.setText("");
@@ -416,7 +420,7 @@ protected void onPause()
                         }
                     });
 
-                } else {
+                } else { //error detected, print error to screen
                     final String finalError = error;
                     runOnUiThread(new Runnable() {
 
@@ -438,7 +442,12 @@ protected void onPause()
 
         t.start();
     }
-
+    /**
+     * Preconditions: none
+     * Post Conditions: show picture preview in bigger screen
+     * Parameters: imageview photo
+     * Use: when we need to show a picture bigger
+     */
     private void loadPhoto(ImageView imageView) {
 
         ImageView tempImageView = imageView;
@@ -486,23 +495,29 @@ protected void onPause()
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.wipe_data) {
-            AlertDialog eraseConfirm = eraseDialogAlertMaker();
+            AlertDialog eraseConfirm = eraseDialogAlertMaker(); //dialog before wiping
+            // data to confirm wipe
 
-            eraseConfirm.show();
+            eraseConfirm.show(); //show dialog
             Toast.makeText(getApplicationContext(), "Data Erased",
                     Toast.LENGTH_LONG).show();
 
             return true;
         }
         if (id == R.id.EmployeeCredentials) {
+            //------Save Location and Description to memory
             SharedPreferences.Editor editor = getSharedPreferences(MY_PREFS_NAME, MODE_PRIVATE).edit();
             editor.putString("ticket_location", Location.getText().toString());
             editor.putString("ticket_description", Description.getText().toString());
             editor.putInt("screen_state", 2);
             editor.commit();
+            //------End Save Location and Description to memory
+
+            //------Go back to registration
             final View v = findViewById(android.R.id.content);
             Intent myIntent = new Intent(v.getContext(), RegistrationActivity.class);
             startActivityForResult(myIntent, 0);
+            //end go back to reg
 
 
         }
@@ -552,6 +567,7 @@ protected void onPause()
         return eraseDialog;
     }
     public static void wipeData(SharedPreferences.Editor editor, SharedPreferences prefs) {
+        //wipe shared preferences
         editor.putString("ticket_photo", null);
         editor.putString("ticket_location", null);
         editor.putInt("screen_state", 0);
@@ -560,12 +576,12 @@ protected void onPause()
         editor.putString("emp_phonenumber", null);
         editor.putString("emp_emailaddress", null);
         editor.putInt("screen_state", 0);
-        editor.putString("companyname", null); //Wipe out company name
-        editor.putInt("screen_state", 0); //Wipe out company name
+        editor.putString("companyname", null);
+        editor.putInt("screen_state", 0);
         editor.putString("authKey", null);
         editor.commit();
-
-        if (!(prefs.getInt("screen_state", 0) == 3)) {
+        //end wipe shared preferences
+        if (!(prefs.getInt("screen_state", 0) == 3)) { //if screenstate is 3 wipe local text fields
 
             Location.setText(null);
             Description.setText(null);
