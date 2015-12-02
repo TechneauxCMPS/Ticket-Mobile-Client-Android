@@ -3,6 +3,6 @@
 
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
-    <string name="wipe_data">Erase Saved Data</string>
+    <string name="wipe_data">Sign Out</string>
     <string name = "EmployeeCredentials">Employee Data</string>
 </resources>
