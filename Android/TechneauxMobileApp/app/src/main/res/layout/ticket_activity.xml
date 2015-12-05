@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent" android:layout_height="match_parent"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    android:background="#161616"
+    android:focusable="true" android:focusableInTouchMode="true">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Error: Not Set"
+        android:id="@+id/ticket_companynameLoggedIn"
+        android:layout_below="@+id/imageView5"
+        android:layout_centerHorizontal="true"
+        android:textColor="#606060"
+        android:gravity="center"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:text="Error: Not Set"
+        android:id="@+id/ticket_employeename"
+
+        android:layout_below="@+id/ticket_companynameLoggedIn"
+        android:layout_alignLeft="@+id/ticket_companynameLoggedIn"
+        android:layout_alignStart="@+id/ticket_companynameLoggedIn"
+        android:textColor="#606060"
+        android:gravity="center"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:text="Error: Not Set"
+        android:id="@+id/ticket_phonenumber"
+        android:layout_below="@+id/ticket_employeename"
+        android:layout_alignLeft="@+id/ticket_employeename"
+        android:layout_alignStart="@+id/ticket_employeename"
+        android:textColor="#606060"
+        android:gravity="center"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:text="Error: Not Set"
+        android:id="@+id/ticket_emailaddress"
+
+        android:textColor="#606060"
+        android:layout_below="@+id/ticket_phonenumber"
+        android:layout_alignLeft="@+id/ticket_phonenumber"
+        android:layout_alignStart="@+id/ticket_phonenumber" />
+
+    // Location
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:inputType="textPersonName"
+        android:ems="10"
+        android:id="@+id/locationsite"
+        android:singleLine="true"
+        android:hint="Location"
+        android:maxLength="64"
+        android:layout_below="@+id/ticket_emailaddress"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="20dp"
+        android:textColorHint="#707070"
+        android:textColor="#aaaaaa"/>
+
+
+    // Description of Issue
+    <EditText
+        android:layout_width="wrap_content"
+        android:ems="10"
+        android:id="@+id/ticket_description"
+        android:singleLine="true"
+        android:hint="Description of Issue"
+        android:maxLength="1024"
+        android:layout_below="@+id/locationsite"
+        android:layout_centerHorizontal="true"
+        android:maxLines="3"
+        android:layout_height="wrap_content"
+        android:isScrollContainer="true"
+        android:inputType="textMultiLine"
+        android:minLines="1"
+        android:textColorHint="#707070"
+        android:textColor="#aaaaaa"/>
+
+    // Error message
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/ticketError"
+        android:layout_below="@+id/ticket_description"
+        android:layout_centerHorizontal="true"
+        android:textColor="#EC462B" />
+
+    // Submit Ticket
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Submit Ticket"
+        android:id="@+id/SubmitTicketBTN"
+        android:singleLine="false"
+        android:textColor="@android:color/white"
+        android:background="#F95E07"
+        android:layout_marginTop="12dp"
+        android:layout_below="@+id/cameraBTN"
+        android:layout_centerHorizontal="true" />
+
+    // Take Photo
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Take Photo"
+        android:id="@+id/cameraBTN"
+
+        android:textColor="@android:color/white"
+        android:background="#F95E07"
+        android:layout_alignTop="@+id/clearPhoto"
+        android:layout_alignLeft="@+id/ticket_description"
+        android:layout_alignStart="@+id/ticket_description" />
+
+    //Progress Bar
+    <ProgressBar
+        android:id="@+id/employeeProgressBar"
+        style="?android:attr/progressBarStyleLarge"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="invisible"
+        android:layout_alignBottom="@+id/SubmitTicketBTN"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginRight="28dp"
+        android:layout_marginEnd="28dp" />
+    // Clear Photo
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Clear Photo"
+        android:id="@+id/clearPhoto"
+
+        android:textColor="@android:color/white"
+        android:background="#F95E07"
+        android:layout_below="@+id/ticketError"
+        android:layout_alignRight="@+id/ticket_description"
+        android:layout_alignEnd="@+id/ticket_description" />
+
+    // Photo preview
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/imageView"
+        android:layout_below="@+id/SubmitTicketBTN"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="20dp" />
+
+    // Logo
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/imageView5"
+        android:src="@drawable/techneauxlogo"
+        android:layout_marginTop="20dp"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true" />
+
+
+</RelativeLayout>

@@ -1,0 +1,120 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+    android:layout_height="match_parent" android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    android:paddingBottom="@dimen/activity_vertical_margin" tools:context=".MainActivity"
+    android:background="#161616"
+    android:focusable="true"
+    android:focusableInTouchMode="true">
+
+    // Company Name
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:singleLine="true"
+        android:ems="10"
+        android:id="@+id/username"
+        android:layout_marginTop="40dp"
+        android:hint="Company Name"
+        android:textColor="#aaaaaa"
+        android:maxLength="64"
+        android:textColorHint="#707070"
+        android:layout_below="@+id/imageView3"
+        android:layout_centerHorizontal="true" />
+
+    // Password
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:singleLine="true"
+        android:ems="10"
+        android:id="@+id/password"
+        android:hint="Password"
+        android:password="true"
+        android:layout_below="@+id/username"
+        android:layout_alignLeft="@+id/username"
+        android:layout_alignStart="@+id/username"
+        android:textColor="#AAAAAA"
+        android:maxLength="16"
+        android:textColorHint="#707070"/>
+    //Progress Bar
+    <ProgressBar
+        android:id="@+id/loginProgressBar"
+        style="?android:attr/progressBarStyleLarge"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="invisible"
+        android:layout_alignTop="@+id/loginErrorText"
+        android:layout_toRightOf="@+id/CSNumberText"
+        android:layout_toEndOf="@+id/CSNumberText" />
+    // Submit button
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Submit"
+        android:id="@+id/loginSubmit"
+        android:textColor="@android:color/white"
+        android:background="#F95E07"
+        android:layout_below="@+id/loginErrorText"
+        android:layout_centerHorizontal="true" />
+
+    // Login Error Message
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/loginErrorText"
+        android:textColor="#EC462B"
+        android:layout_below="@+id/password"
+        android:layout_centerHorizontal="true" />
+
+    // Phone number
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="1-800-337-5313"
+        android:id="@+id/CSNumberText"
+        android:layout_marginTop="34dp"
+        android:layout_below="@+id/loginSubmit"
+        android:layout_centerHorizontal="true"
+        android:textColor="#AAAAAA"/>
+
+    // Customer service info
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="Contact Techneaux Customer Service if you have any questions, do not know your Company Log in, or with any issues you may have."
+        android:id="@+id/helpText"
+        android:textColor="#707070"
+        android:layout_below="@+id/loginSubmit"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_marginTop="62dp"
+        android:gravity="center"/>
+
+    // Logo
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/imageView3"
+        android:layout_marginTop="20dp"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:src="@drawable/techneauxlogo" />
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/imageView6"
+        android:layout_alignBottom="@+id/CSNumberText"
+        android:layout_toLeftOf="@+id/CSNumberText"
+        android:src="@drawable/phone"
+        android:layout_alignTop="@+id/CSNumberText"
+        android:layout_alignLeft="@+id/password"
+        android:layout_alignStart="@+id/password"
+        android:paddingStart="10dp" />
+
+
+</RelativeLayout>
