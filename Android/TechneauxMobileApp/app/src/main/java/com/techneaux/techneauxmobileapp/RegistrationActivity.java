@@ -343,6 +343,7 @@ protected void onPause()
         editor.putString("ticket_photo", null);
         editor.putString("ticket_location", null);
         editor.putInt("screen_state", 0);
+        editor.putString("ticket_description", null);//wipe out ticket description
         editor.putString("emp_firstname", null);
         editor.putString("emp_lastname", null);
         editor.putString("emp_phonenumber", null);

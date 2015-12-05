@@ -276,6 +276,7 @@ public class MainActivity extends AppCompatActivity {
         editor.putString("emp_phonenumber", null); // wipe phone number
         editor.putString("emp_emailaddress", null); //wipe email address
         editor.putString("companyname", null); //Wipe out company name
+        editor.putString("ticket_description",null);//wipe out ticket description
         editor.putInt("screen_state", 0); //Wipe out company name
         editor.putString("authKey",null); //wipe authkey
         editor.commit(); //save!

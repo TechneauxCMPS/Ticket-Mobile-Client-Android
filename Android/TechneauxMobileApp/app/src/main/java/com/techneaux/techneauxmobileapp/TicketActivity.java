@@ -517,6 +517,7 @@ protected void onPause()
             final View v = findViewById(android.R.id.content);
             Intent myIntent = new Intent(v.getContext(), RegistrationActivity.class);
             startActivityForResult(myIntent, 0);
+            finish();
             //end go back to reg
 
 
@@ -578,6 +579,7 @@ protected void onPause()
         editor.putInt("screen_state", 0);
         editor.putString("companyname", null);
         editor.putInt("screen_state", 0);
+        editor.putString("ticket_description",null);//wipe out ticket description
         editor.putString("authKey", null);
         editor.commit();
         //end wipe shared preferences
